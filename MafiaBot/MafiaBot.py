@@ -104,7 +104,8 @@ class MafiaBot:
                 return None
 
         elif command == 'votes':
-            self.PrintVotes(bot)
+            if self.active and self.phase == self.DAYPHASE:
+                self.PrintVotes(bot)
             return None
 
         elif command == 'players':
