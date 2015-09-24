@@ -137,7 +137,7 @@ class MafiaBot:
                         return param + ' is not a player that can be killed!'
             return None
 
-        elif command == 'kill':
+        elif command == 'nokill':
             # check if message came from a mafia channel
             if str(source) in self.mafiachannels:
                 # check if it is night
