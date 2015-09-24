@@ -76,11 +76,11 @@ class MafiaPlayer:
         flipmsg = ''
         if mb.revealfactionondeath:
             if self.faction == self.FACTION_MAFIA:
-                flipmsg += 'Mafia '
+                flipmsg += 'Mafia'
             elif self.faction == self.FACTION_TOWN:
-                flipmsg += 'Town '
+                flipmsg += 'Town'
         if self.role is not None and mb.revealroleondeath:
-            flipmsg += self.role.GetRoleName()
+            flipmsg += ' ' + self.role.GetRoleName()
         if not flipmsg == '':
             flipmsg = ', the ' + flipmsg
         return True, flipmsg

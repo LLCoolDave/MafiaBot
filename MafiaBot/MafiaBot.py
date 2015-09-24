@@ -123,15 +123,31 @@ class MafiaBot:
                     if self.factionkills <= 0:
                         return 'There are not faction kills left to be carried out tonight.'
                     else:
-                        # check if player exists, is alive and not mafia
+                        # check if player exists, is alive
                         identparam = Identifier(param)
                         if identparam in self.players:
-                            if not self.players[identparam].IsDead() and not self.players[identparam].faction == MafiaPlayer.FACTION_MAFIA:
+                            if not self.players[identparam].IsDead():
                                 # player can be killed, so we add the action
                                 self.actionlist.append(MafiaAction(MafiaAction.KILL, nick, identparam, True))
+                                self.factionkills -= 1
                                 return nick+' will kill '+identparam+' tonight.'
+
                         # couldn't find valid kill target
                         return param + ' is not a player that can be killed!'
+            return None
+
+        elif command == 'kill':
+            # check if message came from a mafia channel
+            if str(source) in self.mafiachannels:
+                # check if it is night
+                if self.phase == self.NIGHTPHASE:
+                    # check if there are kills left
+                    if self.factionkills <= 0:
+                        return 'There are not faction kills left to be carried out tonight.'
+                    else:
+                        # pass remaining kills
+                        self.factionkills = 0
+                        return 'You forgo any outstanding faction kills for the night.'
             return None
 
         # template
@@ -227,13 +243,13 @@ class MafiaBot:
             self.votes[player] = self.NOVOTE
             # send role PM to all of the players
             bot.msg(player, self[player].GetRolePM())
-        bot.msg(self.mainchannel, 'The game has started!')
+        bot.msg(self.mainchannel, 'The game has started! It is now Day 1.')
 
     def AssignRoles(self):
         # ToDo Proper handling of this
         # for now, we use a simple system to assign goons and Townies
         playercount = len(self.players)
-        mafiacount = (playercount+1) / 4  # 25% mafia for the start
+        mafiacount = (playercount / 5) + 1  # 20% mafia for the start
         rolelist = [(MafiaPlayer.FACTION_MAFIA, None)]*mafiacount + [(MafiaPlayer.FACTION_TOWN, None)]*(playercount-mafiacount)
         random.shuffle(rolelist)
         # assign roles to players
@@ -241,6 +257,8 @@ class MafiaBot:
         for player in self.players.values():
             # set faction
             player.faction = rolelist[i][0]
+            if player.faction == MafiaPlayer.FACTION_MAFIA:
+                player.mafiachannel = self.mafiachannels[0]
             # instantiate role
             if rolelist[i][1] is not None:
                 # create role
@@ -265,9 +283,9 @@ class MafiaBot:
         self.factionkills = 1
         bot.msg(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.')
         for mafiach in self.mafiachannels:
-            bot.msg(mafiach, 'You have '+str(self.factionkills)+' tonight. Use !kill <target> to use them. The player issuing the command will carry out the kill.')
+            bot.msg(mafiach, 'You have '+str(self.factionkills)+' kills tonight. Use !kill <target> to use them. The player issuing the command will carry out the kill. Use !nokill to pass on the remaining faction kills for the night.')
 
-    # called every 2 seconds
+    # called every 5 seconds
     def GameLoop(self, bot):
         if self.joinchannels:
             for chn in self.mafiachannels:
@@ -277,7 +295,7 @@ class MafiaBot:
             bot.join(self.mainchannel)
             self.joinchannels = False
 
-        if self.active and self.phase == self.NIGHTPHASE:
+        if self.active and (self.phase == self.NIGHTPHASE):
             # handle nightphase
             # check if there are more actions required to be taken
             requiredactions = False
