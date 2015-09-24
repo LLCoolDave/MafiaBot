@@ -1,11 +1,14 @@
 __author__ = 'LLCoolDave'
 
+from MafiaItem import MafiaItem
+
 class MafiaPlayer:
 
     FACTION_TOWN = 0
     FACTION_MAFIA = 1
 
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.mafiachannel = None
         self.dead = True
         self.role = None
@@ -52,7 +55,23 @@ class MafiaPlayer:
 
         return None
 
-    def Kill(self, mb):
+    def Kill(self, mb, checkprotection):
+        if checkprotection:
+            # check all items for BP vest
+            bpfound = False
+            bpname = ''
+            for pair in self.items.items():
+                if pair[1].type == MafiaItem.VEST:
+                    bpname = pair[0]
+                    bpfound = True
+                    break
+            if bpfound:
+                # consume vest
+                del self.items[bpname]
+                # inform player of being hit
+                mb.msg(self.name, "Ouch! You have been hit, but your bulletproof vest protected you.")
+                # exit
+                return False, ''
         self.dead = True
         flipmsg = ''
         if mb.revealfactionondeath:
@@ -64,4 +83,4 @@ class MafiaPlayer:
             flipmsg += self.role.GetRoleName()
         if not flipmsg == '':
             flipmsg = ', the ' + flipmsg
-        return flipmsg
+        return True, flipmsg

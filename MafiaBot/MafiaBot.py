@@ -77,7 +77,7 @@ class MafiaBot:
 
         elif command == 'join':
             if not self.active and nick not in self.players:
-                self[nick] = MafiaPlayer()
+                self[nick] = MafiaPlayer(nick)
                 bot.msg(self.mainchannel, nick + ' has joined the game. There are currently '+str(len(self.players))+' Players in the game.')
             return None
 
@@ -176,8 +176,9 @@ class MafiaBot:
         if player == 'NoLynch':
             bot.msg(self.mainchannel, 'The town decides not to lynch anybody today.', max_messages=10)
         else:
-            playerflip = self.players[player].Kill(self)
-            bot.msg(self.mainchannel, player+playerflip+' was lynched today!', max_messages=10)
+            killok, playerflip = self.players[player].Kill(self, False)
+            if killok:
+                bot.msg(self.mainchannel, player+playerflip+' was lynched today!', max_messages=10)
         if not self.CheckForWinCondition(bot):
             self.BeginNightPhase(bot)
 

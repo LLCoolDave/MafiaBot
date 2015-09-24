@@ -2,9 +2,13 @@ __author__ = 'LLCoolDave'
 
 class MafiaItem:
 
-    def __init__(self):
-        self.name = ''
-        pass
+    GUN = 0
+    SYRINGE = 1
+    VEST = 2
+
+    def __init__(self, name, type):
+        self.name = name
+        self.type = type
 
     def ReceiveItemPM(self):
         return ''
