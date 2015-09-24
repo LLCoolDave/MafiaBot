@@ -25,6 +25,8 @@ class MafiaBot:
         self.votes = dict()
         self.actionlist = list()
         self.daycount = 1
+        self.revealrolesondeath = True
+        self.revealfactionondeath = True
 
         self.ResetGame()
 
@@ -47,6 +49,8 @@ class MafiaBot:
         self.votes = dict()
         self.actionlist = list()
         self.daycount = 1
+        self.revealrolesondeath = True
+        self.revealfactionondeath = True
 
     def HandlePlayerCommand(self, command, source, nick, param, bot):
         if nick in self.players:
@@ -172,8 +176,8 @@ class MafiaBot:
         if player == 'NoLynch':
             bot.msg(self.mainchannel, 'The town decides not to lynch anybody today.', max_messages=10)
         else:
-            rolename = self.players[player].Kill(self)
-            bot.msg(self.mainchannel, player+', the '+rolename+' was lynched today!', max_messages=10)
+            playerflip = self.players[player].Kill(self)
+            bot.msg(self.mainchannel, player+playerflip+' was lynched today!', max_messages=10)
         if not self.CheckForWinCondition(bot):
             self.BeginNightPhase(bot)
 

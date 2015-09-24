@@ -54,7 +54,14 @@ class MafiaPlayer:
 
     def Kill(self, mb):
         self.dead = True
-        if self.role is not None:
-            return self.role.GetRoleName()
-        else:
-            return ''
+        flipmsg = ''
+        if mb.revealfactionondeath:
+            if self.faction == self.FACTION_MAFIA:
+                flipmsg += 'Mafia '
+            elif self.faction == self.FACTION_TOWN:
+                flipmsg += 'Town '
+        if self.role is not None and mb.revealroleondeath:
+            flipmsg += self.role.GetRoleName()
+        if not flipmsg == '':
+            flipmsg = ', the ' + flipmsg
+        return flipmsg
