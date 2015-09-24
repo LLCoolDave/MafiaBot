@@ -229,7 +229,16 @@ class MafiaBot:
         bot.msg(self.mainchannel, 'The game has started!')
 
     def HandleActionList(self, bot):
-        pass
+        # handle roleblocks
+        blockset = set([action.target for action in self.actionlist if action.actiontype == MafiaAction.BLOCK])
+        # handle kill actions
+        killlist = [action for action in self.actionlist if action.actiontype == MafiaAction.KILL and action.source not in blockset]
+        for kill in killlist:
+            killstatus, flipmsg = self.players[kill.target].Kill(self, True)
+            if killstatus:
+                bot.msg(self.mainchannel, kill.target+flipmsg+' has died tonight!', max_messages=10)
+        # reset actionlist
+        self.actionlist = []
 
     def BeginNightPhase(self, bot):
         # ToDo set action required flags for players

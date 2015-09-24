@@ -51,7 +51,7 @@ class MafiaPlayer:
         else:
             if self.role is not None:
                 # forward to role to handle
-                return self.role.HandleCommand(command, param, bot, mb)
+                return self.role.HandleCommand(command, param, bot, mb, self)
 
         return None
 

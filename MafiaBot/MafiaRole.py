@@ -11,5 +11,5 @@ class MafiaRole:
     def GetRoleName(self):
         return ''
 
-    def HandleCommand(self, command, param, bot, mb):
+    def HandleCommand(self, command, param, bot, mb, player):
         return None
