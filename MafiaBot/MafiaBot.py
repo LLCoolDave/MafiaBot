@@ -221,12 +221,31 @@ class MafiaBot:
     def StartGame(self, bot):
         self.active = True
         self.votes = dict()
+        self.AssignRoles()
         for player in self.players.keys():
             self[player].dead = False
             self.votes[player] = self.NOVOTE
             # send role PM to all of the players
             bot.msg(player, self[player].GetRolePM())
         bot.msg(self.mainchannel, 'The game has started!')
+
+    def AssignRoles(self):
+        # ToDo Proper handling of this
+        # for now, we use a simple system to assign goons and Townies
+        playercount = len(self.players)
+        mafiacount = (playercount+1) / 4  # 25% mafia for the start
+        rolelist = [(MafiaPlayer.FACTION_MAFIA, None)]*mafiacount + [(MafiaPlayer.FACTION_TOWN, None)]*(playercount-mafiacount)
+        random.shuffle(rolelist)
+        # assign roles to players
+        i = 0
+        for player in self.players.values():
+            # set faction
+            player.faction = rolelist[i][0]
+            # instantiate role
+            if rolelist[i][1] is not None:
+                # create role
+                pass
+            i += 1
 
     def HandleActionList(self, bot):
         # handle roleblocks
@@ -245,6 +264,8 @@ class MafiaBot:
         self.phase = self.NIGHTPHASE
         self.factionkills = 1
         bot.msg(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.')
+        for mafiach in self.mafiachannels:
+            bot.msg(mafiach, 'You have '+str(self.factionkills)+' tonight. Use !kill <target> to use them. The player issuing the command will carry out the kill.')
 
     # called every 2 seconds
     def GameLoop(self, bot):
