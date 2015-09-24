@@ -3,6 +3,7 @@ __author__ = 'LLCoolDave'
 import random
 from MafiaPlayer import MafiaPlayer
 from sopel.tools import Identifier
+from MafiaAction import MafiaAction
 
 class MafiaBot:
 
@@ -27,6 +28,7 @@ class MafiaBot:
         self.daycount = 1
         self.revealrolesondeath = True
         self.revealfactionondeath = True
+        self.factionkills = 0
 
         self.ResetGame()
 
@@ -51,6 +53,7 @@ class MafiaBot:
         self.daycount = 1
         self.revealrolesondeath = True
         self.revealfactionondeath = True
+        self.factionkills = 0
 
     def HandlePlayerCommand(self, command, source, nick, param, bot):
         if nick in self.players:
@@ -110,6 +113,26 @@ class MafiaBot:
             else:
                 msg = 'Playerlist: ' + self.GetPlayers()
                 return msg
+
+        elif command == 'kill':
+            # check if message came from a mafia channel
+            if str(source) in self.mafiachannels:
+                # check if it is night
+                if self.phase == self.NIGHTPHASE:
+                    # check if there are kills left
+                    if self.factionkills <= 0:
+                        return 'There are not faction kills left to be carried out tonight.'
+                    else:
+                        # check if player exists, is alive and not mafia
+                        identparam = Identifier(param)
+                        if identparam in self.players:
+                            if not self.players[identparam].IsDead() and not self.players[identparam].faction == MafiaPlayer.FACTION_MAFIA:
+                                # player can be killed, so we add the action
+                                self.actionlist.append(MafiaAction(MafiaAction.KILL, nick, identparam, True))
+                                return nick+' will kill '+identparam+' tonight.'
+                        # couldn't find valid kill target
+                        return param + ' is not a player that can be killed!'
+            return None
 
         # template
         elif command == '':
@@ -211,6 +234,7 @@ class MafiaBot:
     def BeginNightPhase(self, bot):
         # ToDo set action required flags for players
         self.phase = self.NIGHTPHASE
+        self.factionkills = 1
         bot.msg(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.')
 
     # called every 2 seconds
@@ -231,6 +255,8 @@ class MafiaBot:
                 if not self.players[player].IsDead():
                     if self.players[player].requiredAction == True:
                         requiredactions = True
+            if self.factionkills > 0:
+                requiredactions = True
             if not requiredactions:
                 self.HandleActionList(bot)
                 if not self.CheckForWinCondition(bot):
