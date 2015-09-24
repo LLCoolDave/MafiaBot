@@ -38,7 +38,7 @@ def Reset(bot, trigger):
     bot.join(mb.deadchat)
 
 
-@module.commands('start', 'kill', 'vote', 'unvote')
+@module.commands('start', 'kill', 'nokill', 'vote', 'unvote')
 @module.require_chanmsg()
 def ChannelOnly(bot, trigger):
     response = bot.memory['MafiaBotDir'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
@@ -75,7 +75,7 @@ def Generic(bot, trigger):
             bot.say(response, max_messages=10)
 
 
-@module.interval(2)
+@module.interval(5)
 def GameLoop(bot):
     # main game loop, check for states and handle them as necessary
     bot.memory['MafiaBotDir'].GameLoop(bot)
