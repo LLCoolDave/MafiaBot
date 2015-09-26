@@ -4,8 +4,7 @@ import random
 from MafiaPlayer import MafiaPlayer
 from sopel.tools import Identifier
 from MafiaAction import MafiaAction
-
-random.seed()
+from Roles.rolelist import Roles
 
 class MafiaBot:
 
@@ -164,6 +163,12 @@ class MafiaBot:
                 return 'It is currently '+self.PhaseStr[self.phase]+' on Day '+str(self.daycount)
             return None
 
+        elif command == 'role':
+            if param.lower() in Roles:
+                return Roles[param.lower()].GetRoleDescription()
+            else:
+                return 'I do not know the role '+param
+
         # template
         elif command == '':
             return None
@@ -264,7 +269,7 @@ class MafiaBot:
         # for now, we use a simple system to assign goons and Townies
         playercount = len(self.players)
         mafiacount = (playercount / 5) + 1  # 20% mafia for the start
-        rolelist = [(MafiaPlayer.FACTION_MAFIA, None)]*mafiacount + [(MafiaPlayer.FACTION_TOWN, None)]*(playercount-mafiacount)
+        rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon')]*mafiacount + [(MafiaPlayer.FACTION_TOWN, 'civilian')]*(playercount-mafiacount)
         random.shuffle(rolelist)
         # assign roles to players
         i = 0
@@ -276,7 +281,8 @@ class MafiaBot:
             # instantiate role
             if rolelist[i][1] is not None:
                 # create role
-                pass
+                if rolelist[i][1] in Roles:
+                    player.role = Roles[rolelist[i][1]]()
             i += 1
 
     def HandleActionList(self, bot):

@@ -11,5 +11,9 @@ class MafiaRole:
     def GetRoleName(self):
         return ''
 
+    @staticmethod
+    def GetRoleDescription():
+        return 'There is currently no description for this role.'
+
     def HandleCommand(self, command, param, bot, mb, player):
         return None
