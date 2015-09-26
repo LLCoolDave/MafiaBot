@@ -14,6 +14,8 @@ class MafiaBot:
     DUSK = 2
     NIGHTPHASE = 3
 
+    PhaseStr = {0: 'Dawn', 1: 'Day', 2: 'Dusk', 3: 'Night'}
+
     NOVOTE = ''
 
 
@@ -151,6 +153,11 @@ class MafiaBot:
                         # pass remaining kills
                         self.factionkills = 0
                         return 'You forgo any outstanding faction kills for the night.'
+            return None
+
+        elif command == 'phase':
+            if self.active:
+                return 'It is currently '+self.PhaseStr[self.phase]+' on Day '+str(self.daycount)
             return None
 
         # template
