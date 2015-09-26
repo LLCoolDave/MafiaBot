@@ -122,3 +122,9 @@ class MafiaPlayer:
         if not flipmsg == '':
             flipmsg = ', the ' + flipmsg
         return True, flipmsg
+
+    def CheckSpecialWinCondition(self, mb):
+        return False
+
+    def SpecialWin(self, mb, bot):
+        pass

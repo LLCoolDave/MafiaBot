@@ -73,15 +73,16 @@ def Vote(player, target='NoLynch'):
     strtar = str(target)
     SendCommand('vote', mainchannel, player, strtar)
 
-def PassDay():
+def PassDay(target='NoLynch'):
     for player in playerlist:
-        Vote(player)
+        Vote(player, target)
 
 def BreakPoint():
     pass
 
 def Main():
     # all players join
+    LogOff()
     JoinAndStart()
     # get mafia
     scums = [player for player in playerlist if mb.players[player].faction == MafiaPlayer.FACTION_MAFIA]
@@ -99,41 +100,22 @@ def Main():
         scum = scums[0]
     # get setup
     setup = [(str(player), mb.players[player].GetFaction(), mb.players[player].role.GetRoleName()) for player in playerlist]
+    LogOn()
     log.debug('This game\'s setup is: '+str(setup))
-    # go to night
-    PassDay()
-    SendCommand('phase', mainchannel, playerlist[4], '')
-    # block the cop
-    SendPlayerCommand('block', pros, pros, cop)
-    # protect player A
-    SendPlayerCommand('protect', medic, medic, playerlist[0])
-    # investigate player A
-    SendPlayerCommand('check', cop, cop, playerlist[0])
-    SendCommand('phase', mainchannel, playerlist[4], '')
-    SendCommand('kill', mafiachannel, scum, playerlist[0])
-    GameLoop()
-    PassDay()
-    SendCommand('phase', mainchannel, playerlist[4], '')
-    log.debug('Try to block scum, this should work as we didn\'t block anyone last time.')
-    SendPlayerCommand('block', pros, pros, scum)
-    SendPlayerCommand('pass', medic, medic, playerlist[0])
-    # investigate player A
-    SendPlayerCommand('check', cop, cop, playerlist[0])
-    SendCommand('kill', mafiachannel, scum, playerlist[0])
-    GameLoop()
-    PassDay()
-    SendCommand('phase', mainchannel, playerlist[4], '')
-    log.debug('Try to block scum, this should work as we didn\'t block anyone last time.')
-    SendPlayerCommand('block', pros, pros, scum)
-    # investigate player A
-    SendPlayerCommand('check', cop, cop, playerlist[0])
-    SendPlayerCommand('protect', medic, medic, playerlist[0])
-    SendCommand('kill', mafiachannel, scum, playerlist[0])
-    GameLoop()
-    PassDay()
+    i = 0
+    while mb.active:
+        # lynch player i
+        PassDay(playerlist[i])
+        LogOff()
+        SendPlayerCommand('pass', pros, pros, cop)
+        SendPlayerCommand('pass', medic, medic, playerlist[0])
+        SendPlayerCommand('pass', cop, cop, playerlist[0])
+        SendCommand('nokill', mafiachannel, scum, playerlist[0])
+        SendCommand('nokill', mafiachannel, pros, playerlist[0])
+        LogOn()
+        GameLoop()
+        i += 1
 
-
-    BreakPoint()
 
 
 

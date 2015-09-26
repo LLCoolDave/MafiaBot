@@ -251,6 +251,8 @@ class MafiaBot:
     def CheckForWinCondition(self, bot):
         # check for victory condition
         townwin = True
+        specialwin = False
+        specialwinner = None
         mafiacount = 0
         nonmafiacount = 0
         for player in self.players:
@@ -261,6 +263,10 @@ class MafiaBot:
                     nonmafiacount += 1
                 if self.players[player].preventtownvictory:
                     townwin = False
+                if self.players[player].CheckSpecialWinCondition(self):
+                    specialwin = True
+                    townwin = False
+                    specialwinner = player
         mafiawin = (mafiacount >= nonmafiacount)
 
         if townwin:
@@ -270,7 +276,11 @@ class MafiaBot:
             playerstr = ', '.join(townies)
             bot.msg(self.mainchannel, 'Town wins this game! Congratulations to '+playerstr, max_messages=10)
 
-        if mafiawin:
+        elif specialwin:
+            self.active = False
+            self.players[specialwinner].SpecialWin(self, bot)
+
+        elif mafiawin:
             self.active = False
             # get mafia players and prepare win message
             mafia = [str(self.players[player].name) for player in self.players if self.players[player].faction == MafiaPlayer.FACTION_MAFIA]
