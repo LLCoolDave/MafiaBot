@@ -9,6 +9,8 @@ class MafiaItem:
     def __init__(self, name, type):
         self.name = name
         self.type = type
+        self.requiredaction = False
+        self.mandatoryaction = False
 
     def ReceiveItemPM(self):
         return ''
@@ -18,3 +20,6 @@ class MafiaItem:
 
     def HandleCommand(self, param, bot, mb):
         return None
+
+    def BeginNightPhase(self, mb, player, bot):
+        return ''

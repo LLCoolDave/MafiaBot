@@ -14,7 +14,8 @@ class MafiaPlayer:
         self.role = None
         self.faction = None
         self.items = dict()
-        self.requiredAction = False
+        self.requiredaction = False
+        self.mandatoryaction = False
 
     def IsDead(self):
         return self.dead
@@ -29,13 +30,29 @@ class MafiaPlayer:
             ret += self.role.GetRolePM()
         return ret
 
+    def UpdateActions(self):
+        reqaction = False
+        manaction = False
+        if self.role is not None:
+            if self.role.requiredaction:
+                reqaction = True
+            if self.role.mandatoryaction:
+                manaction = True
+        for item in self.items.values():
+            if item.requiredaction:
+                reqaction = True
+            if item.mandatoryaction:
+                manaction = True
+        self.requiredaction = reqaction
+        self.mandatoryaction = manaction
+
     def HandleCommand(self, command, param, bot, mb):
         if command == 'pass':
-            if self.requiredAction:
+            if self.requiredaction:
                 if self.role is not None:
-                    if self.role.mandatoryaction:
+                    if self.mandatoryaction:
                         return 'You cannot pass, you have mandatory actions to take.'
-                self.requiredAction = False
+                self.requiredaction = False
                 return 'You decline taking further actions, for now.'
             return None
 
@@ -62,6 +79,16 @@ class MafiaPlayer:
             return 'Town'
         else:
             return 'None'
+
+    def BeginNightPhase(self, mb, bot):
+        nightactionstr = ''
+        if self.role is not None:
+            nightactionstr += self.role.BeginNightPhase(mb, self, bot)
+        for item in self.items.values():
+            nightactionstr += item.BeginNightPhase(mb, self, bot)
+        self.UpdateActions()
+        if not nightactionstr == '':
+            bot.msg(self.name, 'You have to take the following night actions. Use !pass to skip on remaining night actions.\n'+nightactionstr, max_messages=10)
 
     def Kill(self, mb, bot, checkprotection):
         if checkprotection:

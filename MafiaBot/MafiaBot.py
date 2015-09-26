@@ -314,6 +314,9 @@ class MafiaBot:
 
     def BeginNightPhase(self, bot):
         # ToDo set action required flags for players
+        for player in self.players:
+            if not self.players[player].IsDead():
+                self.players[player].BeginNightPhase(self, bot)
         self.phase = self.NIGHTPHASE
         self.factionkills = 1
         bot.msg(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.')
@@ -336,7 +339,7 @@ class MafiaBot:
             requiredactions = False
             for player in self.players:
                 if not self.players[player].IsDead():
-                    if self.players[player].requiredAction == True:
+                    if self.players[player].requiredaction == True:
                         requiredactions = True
             if self.factionkills > 0:
                 requiredactions = True

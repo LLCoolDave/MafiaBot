@@ -4,6 +4,7 @@ class MafiaRole:
 
     def __init__(self):
         self.mandatoryaction = False
+        self.requiredaction = False
 
     def GetRolePM(self):
         return ''
@@ -17,3 +18,6 @@ class MafiaRole:
 
     def HandleCommand(self, command, param, bot, mb, player):
         return None
+
+    def BeginNightPhase(self, mb, player, bot):
+        return ''
