@@ -5,6 +5,8 @@ from MafiaPlayer import MafiaPlayer
 from sopel.tools import Identifier
 from MafiaAction import MafiaAction
 
+random.seed()
+
 class MafiaBot:
 
     DAWN = 0
