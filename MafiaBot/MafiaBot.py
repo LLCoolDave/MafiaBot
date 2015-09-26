@@ -310,12 +310,27 @@ class MafiaBot:
     def HandleActionList(self, bot):
         # handle roleblocks
         blockset = set([action.target for action in self.actionlist if action.actiontype == MafiaAction.BLOCK])
+        # handle protections
+        protections = [action for action in self.actionlist if action.actiontype == MafiaAction.PROTECT and action.source not in blockset]
+        protectdict = dict()
+        for protect in protections:
+            if protect.target not in protectdict:
+                protectdict[protect.target] = 1
+            else:
+                protectdict[protect.target] += 1
         # handle kill actions
         killlist = [action for action in self.actionlist if action.actiontype == MafiaAction.KILL and action.source not in blockset]
         for kill in killlist:
-            killstatus, flipmsg = self.players[kill.target].Kill(self, bot, True)
-            if killstatus:
-                bot.msg(self.mainchannel, kill.target+flipmsg+' has died tonight!', max_messages=10)
+            # check if a player was protected
+            skip = False
+            if kill.target in protectdict:
+                if protectdict[kill.target] > 0:
+                    protectdict[kill.target] -= 1
+                    skip = True
+            if not skip:
+                killstatus, flipmsg = self.players[kill.target].Kill(self, bot, True)
+                if killstatus:
+                    bot.msg(self.mainchannel, kill.target+flipmsg+' has died tonight!', max_messages=10)
         # reset actionlist
         self.actionlist = []
 

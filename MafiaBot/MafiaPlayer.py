@@ -52,6 +52,9 @@ class MafiaPlayer:
                 if self.role is not None:
                     if self.mandatoryaction:
                         return 'You cannot pass, you have mandatory actions to take.'
+                    self.role.requiredaction = False
+                for item in self.items.values():
+                    item.requiredaction = False
                 self.requiredaction = False
                 return 'You decline taking further actions, for now.'
             return None

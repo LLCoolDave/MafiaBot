@@ -88,6 +88,9 @@ def Main():
     # get prostitute
     prostitutes = [player for player in playerlist if isinstance(mb.players[player].role, Roles['prostitute'])]
     pros = prostitutes[0]
+    # get prostitute
+    medics = [player for player in playerlist if isinstance(mb.players[player].role, Roles['medic'])]
+    medic = medics[0]
     if scums[0] in prostitutes:
         scum = scums[1]
     else:
@@ -99,21 +102,27 @@ def Main():
     PassDay()
     SendCommand('phase', mainchannel, playerlist[4], '')
     # test kill command
-    log.debug('Try to self block, this should fail.')
-    SendPlayerCommand('block', pros, pros, str(pros))
-    log.debug('Try to block nonsense, this should fail.')
-    SendPlayerCommand('block', pros, pros, 'foo')
-    log.debug('Try to block scum, this should work.')
-    SendPlayerCommand('block', pros, pros, scum)
-    log.debug('Try to block again afterwards, this should do nothing.')
-    SendPlayerCommand('block', pros, pros, str(pros))
+    SendPlayerCommand('pass', pros, pros, '')
+    # protect player A
+    SendPlayerCommand('protect', medic, medic, playerlist[0])
     SendCommand('phase', mainchannel, playerlist[4], '')
     SendCommand('kill', mafiachannel, scum, playerlist[0])
     GameLoop()
     PassDay()
     SendCommand('phase', mainchannel, playerlist[4], '')
-    log.debug('Try to block scum, this shouldnt work as we have blocked the same player last time.')
+    log.debug('Try to block scum, this should work as we didn\'t block anyone last time.')
     SendPlayerCommand('block', pros, pros, scum)
+    SendPlayerCommand('pass', medic, medic, playerlist[0])
+    SendCommand('kill', mafiachannel, scum, playerlist[0])
+    GameLoop()
+    PassDay()
+    SendCommand('phase', mainchannel, playerlist[4], '')
+    log.debug('Try to block scum, this should work as we didn\'t block anyone last time.')
+    SendPlayerCommand('block', pros, pros, scum)
+    SendPlayerCommand('protect', medic, medic, playerlist[0])
+    SendCommand('kill', mafiachannel, scum, playerlist[0])
+    GameLoop()
+    PassDay()
 
 
     BreakPoint()
