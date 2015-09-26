@@ -310,6 +310,7 @@ class MafiaBot:
     def HandleActionList(self, bot):
         # handle roleblocks
         blockset = set([action.target for action in self.actionlist if action.actiontype == MafiaAction.BLOCK])
+
         # handle protections
         protections = [action for action in self.actionlist if action.actiontype == MafiaAction.PROTECT and action.source not in blockset]
         protectdict = dict()
@@ -318,6 +319,26 @@ class MafiaBot:
                 protectdict[protect.target] = 1
             else:
                 protectdict[protect.target] += 1
+        # handle faction investigations
+        copchecks = [action for action in self.actionlist if action.actiontype == MafiaAction.CHECKFACTION]
+        for check in copchecks:
+            if check.source in blockset:
+                bot.msg(check.source, 'You were blocked tonight.')
+            else:
+                # ToDo: check sanity here
+                bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to be aligned with '+self.players[check.target].GetFaction()+'.')
+
+        # handle role investigations
+        rolecopchecks = [action for action in self.actionlist if action.actiontype == MafiaAction.CHECKROLE]
+        for check in rolecopchecks:
+            if check.source in blockset:
+                bot.msg(check.source, 'You were blocked tonight.')
+            else:
+                if self.players[check.target].role is not None:
+                    bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to be a '+self.players[check.target].role.GetRoleName()+'.')
+                else:
+                    bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to not have a role at all. Strange.')
+
         # handle kill actions
         killlist = [action for action in self.actionlist if action.actiontype == MafiaAction.KILL and action.source not in blockset]
         for kill in killlist:
@@ -331,6 +352,7 @@ class MafiaBot:
                 killstatus, flipmsg = self.players[kill.target].Kill(self, bot, True)
                 if killstatus:
                     bot.msg(self.mainchannel, kill.target+flipmsg+' has died tonight!', max_messages=10)
+
         # reset actionlist
         self.actionlist = []
 

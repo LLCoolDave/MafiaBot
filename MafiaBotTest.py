@@ -91,6 +91,8 @@ def Main():
     # get prostitute
     medics = [player for player in playerlist if isinstance(mb.players[player].role, Roles['medic'])]
     medic = medics[0]
+    cops = [player for player in playerlist if isinstance(mb.players[player].role, Roles['cop'])]
+    cop = cops[0]
     if scums[0] in prostitutes:
         scum = scums[1]
     else:
@@ -101,10 +103,12 @@ def Main():
     # go to night
     PassDay()
     SendCommand('phase', mainchannel, playerlist[4], '')
-    # test kill command
-    SendPlayerCommand('pass', pros, pros, '')
+    # block the cop
+    SendPlayerCommand('block', pros, pros, cop)
     # protect player A
     SendPlayerCommand('protect', medic, medic, playerlist[0])
+    # investigate player A
+    SendPlayerCommand('check', cop, cop, playerlist[0])
     SendCommand('phase', mainchannel, playerlist[4], '')
     SendCommand('kill', mafiachannel, scum, playerlist[0])
     GameLoop()
@@ -113,12 +117,16 @@ def Main():
     log.debug('Try to block scum, this should work as we didn\'t block anyone last time.')
     SendPlayerCommand('block', pros, pros, scum)
     SendPlayerCommand('pass', medic, medic, playerlist[0])
+    # investigate player A
+    SendPlayerCommand('check', cop, cop, playerlist[0])
     SendCommand('kill', mafiachannel, scum, playerlist[0])
     GameLoop()
     PassDay()
     SendCommand('phase', mainchannel, playerlist[4], '')
     log.debug('Try to block scum, this should work as we didn\'t block anyone last time.')
     SendPlayerCommand('block', pros, pros, scum)
+    # investigate player A
+    SendPlayerCommand('check', cop, cop, playerlist[0])
     SendPlayerCommand('protect', medic, medic, playerlist[0])
     SendCommand('kill', mafiachannel, scum, playerlist[0])
     GameLoop()
