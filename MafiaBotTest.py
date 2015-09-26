@@ -46,6 +46,9 @@ def SendCommand(command, source, nick, param):
 
 def SendPlayerCommand(command, source, nick, param):
     reply = mb.HandlePlayerCommand(command, source, nick, param, botstub())
+    log.info('COMMAND '+command+' by '+str(nick)+' in '+str(source)+' with parameter \''+param+'\'')
+    if reply is not None:
+        log.info('RESPONSE ' + reply)
 
 def GameLoop():
     mb.GameLoop(botstub())
@@ -83,27 +86,34 @@ def Main():
     JoinAndStart()
     LogOn()
     # get mafia
-    scum = [player for player in playerlist if mb.players[player].faction == MafiaPlayer.FACTION_MAFIA]
+    scums = [player for player in playerlist if mb.players[player].faction == MafiaPlayer.FACTION_MAFIA]
+    # get prostitute
+    prostitutes = [player for player in playerlist if isinstance(mb.players[player].role, Roles['prostitute'])]
+    pros = prostitutes[0]
+    if scums[0] in prostitutes:
+        scum = scums[1]
+    else:
+        scum = scums[0]
     # get setup
     setup = [(str(player), mb.players[player].GetFaction(), mb.players[player].role.GetRoleName()) for player in playerlist]
     log.debug('This game\'s setup is: '+str(setup))
     # go to night
-    LogOff()
     PassDay()
-    LogOn()
     SendCommand('phase', mainchannel, playerlist[4], '')
     # test kill command
-    log.info('No reply expected: ')
-    SendCommand('kill', mainchannel, scum[0], playerlist[0])
-    log.info('Positive reply expected: ')
-    SendCommand('kill', mafiachannel, scum[0], playerlist[0])
-    log.info('Negative response expected: ')
-    SendCommand('kill', mafiachannel, scum[1], playerlist[0])
+    log.debug('Try to self block, this should fail.')
+    SendPlayerCommand('block', pros, pros, str(pros))
+    log.debug('Try to block nonsense, this should fail.')
+    SendPlayerCommand('block', pros, pros, 'foo')
+    log.debug('Try to block scum, this should work.')
+    SendPlayerCommand('block', pros, pros, scum)
+    log.debug('Try to block again afterwards, this should do nothing.')
+    SendPlayerCommand('block', pros, pros, str(pros))
+    SendCommand('phase', mainchannel, playerlist[4], '')
+    SendCommand('kill', mafiachannel, scum, playerlist[0])
     GameLoop()
     SendCommand('phase', mainchannel, playerlist[4], '')
-    SendCommand('role', mainchannel, playerlist[4], 'Goon')
-    SendCommand('role', mainchannel, playerlist[4], 'Prostitute')
-    SendCommand('role', mainchannel, playerlist[4], 'VT')
+
     BreakPoint()
 
 
