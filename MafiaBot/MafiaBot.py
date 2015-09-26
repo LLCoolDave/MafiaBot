@@ -99,6 +99,13 @@ class MafiaBot:
             else:
                 return None
 
+        elif command == 'nolynch':
+            if self.active and self.phase == self.DAYPHASE and nick in self.players:
+                self.HandleVote(nick, 'NoLynch', bot)
+                return None
+            else:
+                return None
+
         elif command == 'unvote':
             if self.active and nick in self.players:
                 self.votes[nick] = self.NOVOTE

@@ -38,7 +38,7 @@ def Reset(bot, trigger):
     bot.join(mb.deadchat)
 
 
-@module.commands('start', 'kill', 'nokill', 'vote', 'unvote')
+@module.commands('start', 'kill', 'nokill', 'vote', 'unvote', 'nolynch')
 @module.require_chanmsg()
 def ChannelOnly(bot, trigger):
     response = bot.memory['MafiaBotDir'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
