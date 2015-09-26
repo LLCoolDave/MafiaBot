@@ -2,9 +2,13 @@ __author__ = 'LLCoolDave'
 
 class MafiaRole:
 
-    def __init__(self):
+    def __init__(self, settings=dict()):
         self.mandatoryaction = False
         self.requiredaction = False
+        if 'limiteduses' in settings:
+            self.limiteduses = settings['limiteduses']
+        else:
+            self.limiteduses = -1
 
     def GetRolePM(self):
         return ''

@@ -75,7 +75,7 @@ class MafiaBot:
             # rejoin new channels and set silent mode for mafia channels
             for chn in self.mafiachannels:
                 bot.join(chn)
-                bot.write(('MODE ', chn+' +s'))
+                bot.write(('MODE ', chn+' +s', dict()))
             bot.join(self.deadchat)
             return None
 
@@ -85,7 +85,7 @@ class MafiaBot:
         elif command == 'join':
             if not self.active and nick not in self.players:
                 self[nick] = MafiaPlayer(nick)
-                bot.msg(self.mainchannel, nick + ' has joined the game. There are currently '+str(len(self.players))+' Players in the game.')
+                bot.msg(self.mainchannel, nick + ' has joined the game. There are currently '+str(len(self.players))+' Players in the game.', dict())
             return None
 
         elif command == 'start':
@@ -250,7 +250,7 @@ class MafiaBot:
                 break
         if alldead:
             self.active = False
-            bot.msg(self.mainchannel, 'The game has ended!')
+            bot.msg(self.mainchannel, 'The game has ended!', dict())
 
         return alldead
 
@@ -263,7 +263,7 @@ class MafiaBot:
             self.votes[player] = self.NOVOTE
             # send role PM to all of the players
             bot.msg(player, self[player].GetRolePM())
-        bot.msg(self.mainchannel, 'The game has started! It is now Day 1.')
+        bot.msg(self.mainchannel, 'The game has started! It is now Day 1.', dict())
 
     def AssignRoles(self):
         # ToDo Proper handling of this
@@ -273,15 +273,15 @@ class MafiaBot:
         if playercount == 7:
             # use the basic setup
             mafiacount = 2
-            rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon'),
-                        (MafiaPlayer.FACTION_MAFIA, 'prostitute'),
-                        (MafiaPlayer.FACTION_TOWN, 'cop'),
-                        (MafiaPlayer.FACTION_TOWN, 'medic'),
-                        (MafiaPlayer.FACTION_TOWN, 'civilian'),
-                        (MafiaPlayer.FACTION_TOWN, 'civilian'),
-                        (MafiaPlayer.FACTION_TOWN, 'civilian')]
+            rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon', dict()),
+                        (MafiaPlayer.FACTION_MAFIA, 'prostitute', {'limiteduses': 1}),
+                        (MafiaPlayer.FACTION_TOWN, 'cop', dict()),
+                        (MafiaPlayer.FACTION_TOWN, 'medic', dict()),
+                        (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),
+                        (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),
+                        (MafiaPlayer.FACTION_TOWN, 'civilian', dict())]
         else:
-            rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon')]*mafiacount + [(MafiaPlayer.FACTION_TOWN, 'civilian')]*(playercount-mafiacount)
+            rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon', dict())]*mafiacount + [(MafiaPlayer.FACTION_TOWN, 'civilian', dict())]*(playercount-mafiacount)
         random.shuffle(rolelist)
         # assign roles to players
         i = 0
@@ -294,7 +294,7 @@ class MafiaBot:
             if rolelist[i][1] is not None:
                 # create role
                 if rolelist[i][1] in Roles:
-                    player.role = Roles[rolelist[i][1]]()
+                    player.role = Roles[rolelist[i][1]](rolelist[i][2])
                 else:
                     #create dummy role
                     player.role = MafiaRole()
@@ -319,16 +319,16 @@ class MafiaBot:
                 self.players[player].BeginNightPhase(self, bot)
         self.phase = self.NIGHTPHASE
         self.factionkills = 1
-        bot.msg(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.')
+        bot.msg(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.', dict())
         for mafiach in self.mafiachannels:
-            bot.msg(mafiach, 'You have '+str(self.factionkills)+' kills tonight. Use !kill <target> to use them. The player issuing the command will carry out the kill. Use !nokill to pass on the remaining faction kills for the night.')
+            bot.msg(mafiach, 'You have '+str(self.factionkills)+' kills tonight. Use !kill <target> to use them. The player issuing the command will carry out the kill. Use !nokill to pass on the remaining faction kills for the night.', dict())
 
     # called every 5 seconds
     def GameLoop(self, bot):
         if self.joinchannels:
             for chn in self.mafiachannels:
                 bot.join(chn)
-                bot.write(('MODE ', chn+' +s'))
+                bot.write(('MODE ', chn+' +s', dict()))
             bot.join(self.deadchat)
             bot.join(self.mainchannel)
             self.joinchannels = False

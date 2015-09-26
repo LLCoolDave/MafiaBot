@@ -81,10 +81,8 @@ def BreakPoint():
     pass
 
 def Main():
-    LogOff()
     # all players join
     JoinAndStart()
-    LogOn()
     # get mafia
     scums = [player for player in playerlist if mb.players[player].faction == MafiaPlayer.FACTION_MAFIA]
     # get prostitute
