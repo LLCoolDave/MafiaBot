@@ -1,6 +1,6 @@
 __author__ = 'LLCoolDave'
 
-class MafiaItem:
+class MafiaItem(object):
 
     GUN = 0
     SYRINGE = 1

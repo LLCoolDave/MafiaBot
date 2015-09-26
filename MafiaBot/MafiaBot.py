@@ -281,7 +281,7 @@ class MafiaBot:
             # use the basic setup
             mafiacount = 2
             rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon', dict()),
-                        (MafiaPlayer.FACTION_MAFIA, 'prostitute', {'limiteduses': 1}),
+                        (MafiaPlayer.FACTION_MAFIA, 'prostitute', dict()),
                         (MafiaPlayer.FACTION_TOWN, 'cop', dict()),
                         (MafiaPlayer.FACTION_TOWN, 'medic', dict()),
                         (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),

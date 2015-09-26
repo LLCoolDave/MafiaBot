@@ -82,7 +82,6 @@ def BreakPoint():
 
 def Main():
     # all players join
-    LogOff()
     JoinAndStart()
     # get mafia
     scums = [player for player in playerlist if mb.players[player].faction == MafiaPlayer.FACTION_MAFIA]
@@ -95,12 +94,26 @@ def Main():
         scum = scums[0]
     # get setup
     setup = [(str(player), mb.players[player].GetFaction(), mb.players[player].role.GetRoleName()) for player in playerlist]
-    LogOn()
     log.debug('This game\'s setup is: '+str(setup))
-    LogOff()
     # go to night
     PassDay()
-    LogOn()
+    SendCommand('phase', mainchannel, playerlist[4], '')
+    # test kill command
+    log.debug('Try to self block, this should fail.')
+    SendPlayerCommand('block', pros, pros, str(pros))
+    log.debug('Try to block nonsense, this should fail.')
+    SendPlayerCommand('block', pros, pros, 'foo')
+    log.debug('Try to block scum, this should work.')
+    SendPlayerCommand('block', pros, pros, scum)
+    log.debug('Try to block again afterwards, this should do nothing.')
+    SendPlayerCommand('block', pros, pros, str(pros))
+    SendCommand('phase', mainchannel, playerlist[4], '')
+    SendCommand('kill', mafiachannel, scum, playerlist[0])
+    GameLoop()
+    PassDay()
+    SendCommand('phase', mainchannel, playerlist[4], '')
+    log.debug('Try to block scum, this shouldnt work as we have blocked the same player last time.')
+    SendPlayerCommand('block', pros, pros, scum)
 
 
     BreakPoint()

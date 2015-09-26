@@ -4,8 +4,12 @@ from MafiaBot.MafiaAction import MafiaAction
 
 class Prostitute(MafiaRole):
 
+    def __init__(self, settings=dict()):
+        super(Prostitute, self).__init__(settings)
+        self.lastpick = None
+
     def GetRolePM(self):
-        ret = 'You are a Prostitute. You may roleblock another player during the night.'
+        ret = 'You are a Prostitute. You may roleblock another player during the night. You cannot pick the same player on two consecutive nights.'
         if self.limiteduses > -1:
             ret += ' You may only use this ability '+str(self.limiteduses)+' times.'
         return ret
@@ -15,16 +19,20 @@ class Prostitute(MafiaRole):
 
     @staticmethod
     def GetRoleDescription():
-        return 'Prostitutes are roleblockers, disabling the active abilities of another player at night. Roleblocks do not interfer with each other, but prevent all other actions by the blocked player.'
+        return 'Prostitutes are roleblockers, disabling the active abilities of another player at night. Roleblocks do not interfer with each other, but prevent all other actions by the blocked player. A prositute may not pick the same player on two consecutive nights.'
 
     def HandleCommand(self, command, param, bot, mb, player):
         if self.requiredaction:
             if command == 'block':
                 if not self.limiteduses == 0:
                     target = Identifier(param)
+                    if self.lastpick is None:
+                        lastpick = Identifier('')
+                    else:
+                        lastpick = self.lastpick
                     if target in mb.players:
                         if not mb.players[target].IsDead():
-                            if mb.players[target] is player:
+                            if mb.players[target] is player or target == lastpick:
                                 return 'You cannot block that player.'
                             else:
                                 mb.actionlist.append(MafiaAction(MafiaAction.BLOCK, player.name, target, True))
@@ -32,6 +40,7 @@ class Prostitute(MafiaRole):
                                 player.UpdateActions()
                                 ret = 'You block '+str(target)+' tonight.'
                                 self.limiteduses -= 1
+                                self.lastpick = target
                                 if self.limiteduses > -1:
                                     ret += 'You have '+str(self.limiteduses)+' blocks remaining.'
                                 return ret
@@ -45,6 +54,8 @@ class Prostitute(MafiaRole):
             ret = 'Prostitute: You may roleblock another player tonight. Use !block <player> to block that player.'
             if self.limiteduses > -1:
                 ret += ' You have '+str(self.limiteduses)+' uses remaining.'
+            if self.lastpick is not None:
+                ret += ' Your last pick was: '+str(self.lastpick)
             return ret
         else:
             return ''

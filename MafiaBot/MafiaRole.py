@@ -1,6 +1,7 @@
 __author__ = 'LLCoolDave'
 
-class MafiaRole:
+
+class MafiaRole(object):
 
     def __init__(self, settings=dict()):
         self.mandatoryaction = False
