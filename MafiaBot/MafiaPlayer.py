@@ -55,7 +55,15 @@ class MafiaPlayer:
 
         return None
 
-    def Kill(self, mb, checkprotection):
+    def GetFaction(self):
+        if self.faction == self.FACTION_MAFIA:
+            return 'Mafia'
+        elif self.faction == self.FACTION_TOWN:
+            return 'Town'
+        else:
+            return 'None'
+
+    def Kill(self, mb, bot, checkprotection):
         if checkprotection:
             # check all items for BP vest
             bpfound = False
@@ -69,16 +77,15 @@ class MafiaPlayer:
                 # consume vest
                 del self.items[bpname]
                 # inform player of being hit
-                mb.msg(self.name, "Ouch! You have been hit, but your bulletproof vest protected you.")
+                bot.msg(self.name, "Ouch! You have been hit, but your bulletproof vest protected you.")
                 # exit
                 return False, ''
         self.dead = True
+        # inform the player that they died
+        bot.msg(self.name, "You have died. You may join the dead chat at "+mb.deadchat)
         flipmsg = ''
         if mb.revealfactionondeath:
-            if self.faction == self.FACTION_MAFIA:
-                flipmsg += 'Mafia'
-            elif self.faction == self.FACTION_TOWN:
-                flipmsg += 'Town'
+            flipmsg += self.GetFaction()
         if self.role is not None and mb.revealrolesondeath:
             flipmsg += ' ' + self.role.GetRoleName()
         if not flipmsg == '':

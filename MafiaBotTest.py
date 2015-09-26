@@ -18,7 +18,7 @@ mainchannel = mb.mainchannel
 deadchat = mb.deadchat
 mafiachannel = mb.mafiachannels[0]
 
-playerlist = [Identifier('PLAYERA'), Identifier('PLAYERB'), Identifier('PLAYERC'), Identifier('PLAYERD'), Identifier('PLAYERE'), Identifier('PLAYERF')]
+playerlist = [Identifier('PLAYERA'), Identifier('PLAYERB'), Identifier('PLAYERC'), Identifier('PLAYERD'), Identifier('PLAYERE'), Identifier('PLAYERF'), Identifier('PLAYERG')]
 
 
 class botstub:
@@ -82,9 +82,11 @@ def Main():
     # all players join
     JoinAndStart()
     LogOn()
-    #get mafia players
+    # get mafia
     scum = [player for player in playerlist if mb.players[player].faction == MafiaPlayer.FACTION_MAFIA]
-    log.debug('Mafia this game are: '+str(scum))
+    # get setup
+    setup = [(str(player), mb.players[player].GetFaction(), mb.players[player].role.GetRoleName()) for player in playerlist]
+    log.debug('This game\'s setup is: '+str(setup))
     # go to night
     LogOff()
     PassDay()
@@ -99,6 +101,9 @@ def Main():
     SendCommand('kill', mafiachannel, scum[1], playerlist[0])
     GameLoop()
     SendCommand('phase', mainchannel, playerlist[4], '')
+    SendCommand('role', mainchannel, playerlist[4], 'Goon')
+    SendCommand('role', mainchannel, playerlist[4], 'Prostitute')
+    SendCommand('role', mainchannel, playerlist[4], 'VT')
     BreakPoint()
 
 

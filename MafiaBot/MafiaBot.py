@@ -4,6 +4,7 @@ import random
 from MafiaPlayer import MafiaPlayer
 from sopel.tools import Identifier
 from MafiaAction import MafiaAction
+from MafiaRole import MafiaRole
 from Roles.rolelist import Roles
 
 class MafiaBot:
@@ -127,7 +128,7 @@ class MafiaBot:
                     if not self.players[nick].IsDead() and self.players[nick].faction == MafiaPlayer.FACTION_MAFIA:
                         # check if there are kills left
                         if self.factionkills <= 0:
-                            return 'There are not faction kills left to be carried out tonight.'
+                            return 'There are no faction kills left to be carried out tonight.'
                         else:
                             # check if player exists, is alive
                             identparam = Identifier(param)
@@ -234,7 +235,7 @@ class MafiaBot:
         if player == 'NoLynch':
             bot.msg(self.mainchannel, 'The town decides not to lynch anybody today.', max_messages=10)
         else:
-            killok, playerflip = self.players[player].Kill(self, False)
+            killok, playerflip = self.players[player].Kill(self, bot, False)
             if killok:
                 bot.msg(self.mainchannel, player+playerflip+' was lynched today!', max_messages=10)
         if not self.CheckForWinCondition(bot):
@@ -269,7 +270,18 @@ class MafiaBot:
         # for now, we use a simple system to assign goons and Townies
         playercount = len(self.players)
         mafiacount = (playercount / 5) + 1  # 20% mafia for the start
-        rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon')]*mafiacount + [(MafiaPlayer.FACTION_TOWN, 'civilian')]*(playercount-mafiacount)
+        if playercount == 7:
+            # use the basic setup
+            mafiacount = 2
+            rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon'),
+                        (MafiaPlayer.FACTION_MAFIA, 'prostitute'),
+                        (MafiaPlayer.FACTION_TOWN, 'cop'),
+                        (MafiaPlayer.FACTION_TOWN, 'medic'),
+                        (MafiaPlayer.FACTION_TOWN, 'civilian'),
+                        (MafiaPlayer.FACTION_TOWN, 'civilian'),
+                        (MafiaPlayer.FACTION_TOWN, 'civilian')]
+        else:
+            rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon')]*mafiacount + [(MafiaPlayer.FACTION_TOWN, 'civilian')]*(playercount-mafiacount)
         random.shuffle(rolelist)
         # assign roles to players
         i = 0
@@ -283,6 +295,9 @@ class MafiaBot:
                 # create role
                 if rolelist[i][1] in Roles:
                     player.role = Roles[rolelist[i][1]]()
+                else:
+                    #create dummy role
+                    player.role = MafiaRole()
             i += 1
 
     def HandleActionList(self, bot):
@@ -291,7 +306,7 @@ class MafiaBot:
         # handle kill actions
         killlist = [action for action in self.actionlist if action.actiontype == MafiaAction.KILL and action.source not in blockset]
         for kill in killlist:
-            killstatus, flipmsg = self.players[kill.target].Kill(self, True)
+            killstatus, flipmsg = self.players[kill.target].Kill(self, bot, True)
             if killstatus:
                 bot.msg(self.mainchannel, kill.target+flipmsg+' has died tonight!', max_messages=10)
         # reset actionlist
