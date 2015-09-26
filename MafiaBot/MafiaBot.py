@@ -249,17 +249,35 @@ class MafiaBot:
             self.BeginNightPhase(bot)
 
     def CheckForWinCondition(self, bot):
-        # just for testing: check if anybody is alive
-        alldead = True
+        # check for victory condition
+        townwin = True
+        mafiacount = 0
+        nonmafiacount = 0
         for player in self.players:
             if not self.players[player].IsDead():
-                alldead = False
-                break
-        if alldead:
-            self.active = False
-            bot.msg(self.mainchannel, 'The game has ended!', dict())
+                if self.players[player].faction == MafiaPlayer.FACTION_MAFIA:
+                    mafiacount += 1
+                else:
+                    nonmafiacount += 1
+                if self.players[player].preventtownvictory:
+                    townwin = False
+        mafiawin = (mafiacount >= nonmafiacount)
 
-        return alldead
+        if townwin:
+            self.active = False
+            # get town players and prepare win message
+            townies = [str(self.players[player].name) for player in self.players if self.players[player].faction == MafiaPlayer.FACTION_TOWN]
+            playerstr = ', '.join(townies)
+            bot.msg(self.mainchannel, 'Town wins this game! Congratulations to '+playerstr, max_messages=10)
+
+        if mafiawin:
+            self.active = False
+            # get mafia players and prepare win message
+            mafia = [str(self.players[player].name) for player in self.players if self.players[player].faction == MafiaPlayer.FACTION_MAFIA]
+            playerstr = ', '.join(mafia)
+            bot.msg(self.mainchannel, 'Mafia wins this game! Congratulations to '+playerstr, max_messages=10)
+
+        return mafiawin or townwin
 
     def StartGame(self, bot):
         self.active = True
@@ -297,6 +315,7 @@ class MafiaBot:
             player.faction = rolelist[i][0]
             if player.faction == MafiaPlayer.FACTION_MAFIA:
                 player.mafiachannel = self.mafiachannels[0]
+                player.preventtownvictory = True
             # instantiate role
             if rolelist[i][1] is not None:
                 # create role

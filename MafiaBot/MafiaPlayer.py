@@ -16,6 +16,7 @@ class MafiaPlayer:
         self.items = dict()
         self.requiredaction = False
         self.mandatoryaction = False
+        self.preventtownvictory = False
 
     def IsDead(self):
         return self.dead
