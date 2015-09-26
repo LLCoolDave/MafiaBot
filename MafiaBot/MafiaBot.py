@@ -124,21 +124,23 @@ class MafiaBot:
             if str(source) in self.mafiachannels:
                 # check if it is night
                 if self.phase == self.NIGHTPHASE:
-                    # check if there are kills left
-                    if self.factionkills <= 0:
-                        return 'There are not faction kills left to be carried out tonight.'
-                    else:
-                        # check if player exists, is alive
-                        identparam = Identifier(param)
-                        if identparam in self.players:
-                            if not self.players[identparam].IsDead():
-                                # player can be killed, so we add the action
-                                self.actionlist.append(MafiaAction(MafiaAction.KILL, nick, identparam, True))
-                                self.factionkills -= 1
-                                return nick+' will kill '+identparam+' tonight.'
+                    # check if player is alive and mafia
+                    if not self.players[nick].IsDead() and self.players[nick].faction == MafiaPlayer.FACTION_MAFIA:
+                        # check if there are kills left
+                        if self.factionkills <= 0:
+                            return 'There are not faction kills left to be carried out tonight.'
+                        else:
+                            # check if player exists, is alive
+                            identparam = Identifier(param)
+                            if identparam in self.players:
+                                if not self.players[identparam].IsDead():
+                                    # player can be killed, so we add the action
+                                    self.actionlist.append(MafiaAction(MafiaAction.KILL, nick, identparam, True))
+                                    self.factionkills -= 1
+                                    return nick+' will kill '+identparam+' tonight.'
 
-                        # couldn't find valid kill target
-                        return param + ' is not a player that can be killed!'
+                            # couldn't find valid kill target
+                            return param + ' is not a player that can be killed!'
             return None
 
         elif command == 'nokill':
@@ -146,13 +148,15 @@ class MafiaBot:
             if str(source) in self.mafiachannels:
                 # check if it is night
                 if self.phase == self.NIGHTPHASE:
-                    # check if there are kills left
-                    if self.factionkills <= 0:
-                        return 'There are not faction kills left to be carried out tonight.'
-                    else:
-                        # pass remaining kills
-                        self.factionkills = 0
-                        return 'You forgo any outstanding faction kills for the night.'
+                    # check if player is alive and mafia
+                    if not self.players[nick].IsDead() and self.players[nick].faction == MafiaPlayer.FACTION_MAFIA:
+                        # check if there are kills left
+                        if self.factionkills <= 0:
+                            return 'There are no faction kills left to be carried out tonight.'
+                        else:
+                            # pass remaining kills
+                            self.factionkills = 0
+                            return 'You forgo any outstanding faction kills for the night.'
             return None
 
         elif command == 'phase':
