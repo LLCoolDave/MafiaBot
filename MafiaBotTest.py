@@ -110,7 +110,11 @@ def Main():
     SendCommand('phase', mainchannel, playerlist[4], '')
     SendCommand('kill', mafiachannel, scum, playerlist[0])
     GameLoop()
+    PassDay()
     SendCommand('phase', mainchannel, playerlist[4], '')
+    log.debug('Try to block scum, this shouldnt work as we have no uses remaining.')
+    SendPlayerCommand('block', pros, pros, scum)
+
 
     BreakPoint()
 

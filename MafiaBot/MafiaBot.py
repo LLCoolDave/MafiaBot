@@ -313,9 +313,10 @@ class MafiaBot:
         self.actionlist = []
 
     def BeginNightPhase(self, bot):
-        # ToDo set action required flags for players
+        self.votes = dict()
         for player in self.players:
             if not self.players[player].IsDead():
+                self.votes[player] = self.NOVOTE
                 self.players[player].BeginNightPhase(self, bot)
         self.phase = self.NIGHTPHASE
         self.factionkills = 1

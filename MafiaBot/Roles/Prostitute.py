@@ -36,13 +36,15 @@ class Prostitute(MafiaRole):
                                     ret += 'You have '+str(self.limiteduses)+' blocks remaining.'
                                 return ret
                     return 'Cannot find player '+param
-                else:
-                    return 'You have no uses left.'
+
         return None
 
     def BeginNightPhase(self, mb, player, bot):
-        self.requiredaction = True
-        ret = 'Prostitute: You may roleblock another player tonight. Use !block <player> to block that player.'
-        if self.limiteduses > -1:
-            ret += ' You have '+str(self.limiteduses)+' uses remaining.'
-        return ret
+        if not self.limiteduses == 0:
+            self.requiredaction = True
+            ret = 'Prostitute: You may roleblock another player tonight. Use !block <player> to block that player.'
+            if self.limiteduses > -1:
+                ret += ' You have '+str(self.limiteduses)+' uses remaining.'
+            return ret
+        else:
+            return ''
