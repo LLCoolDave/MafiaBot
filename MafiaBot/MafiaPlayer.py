@@ -128,3 +128,10 @@ class MafiaPlayer:
 
     def SpecialWin(self, mb, bot):
         pass
+
+    def NightKillPower(self):
+        # ToDo add item power
+        if self.role is not None:
+            return self.role.NightKillPower()
+        else:
+            return 0

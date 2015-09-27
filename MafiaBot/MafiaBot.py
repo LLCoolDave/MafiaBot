@@ -255,19 +255,39 @@ class MafiaBot:
         specialwinner = None
         mafiacount = 0
         nonmafiacount = 0
+        nightkillpower = 0
         for player in self.players:
             if not self.players[player].IsDead():
                 if self.players[player].faction == MafiaPlayer.FACTION_MAFIA:
                     mafiacount += 1
                 else:
                     nonmafiacount += 1
+                    nightkillpower += self.players[player].NightKillPower()
                 if self.players[player].preventtownvictory:
                     townwin = False
                 if self.players[player].CheckSpecialWinCondition(self):
                     specialwin = True
                     townwin = False
                     specialwinner = player
-        mafiawin = (mafiacount >= nonmafiacount)
+
+        # try our best to identify when mafia has won without claiming any early victories
+        # mafia very rarely has forced wins when they are outnumbered, so calculations assume a no lynch as the strongest
+        # day outcome, since mislynches are not enforceable
+        if self.phase == self.NIGHTPHASE:
+            if mafiacount > nonmafiacount:
+                # if the mafia actually outnumber town going into the day, they can actually lynch a townie
+                # ToDo: consider day guns once introduced
+                nonmafiacount -= 1
+
+        # now consider the outcome of the next night. Once mafia outnumber town, they can only be stopped by a large
+        # amount of town kill power, which will be adjusted for each night check here
+        # we assume the worst outcome for mafia, town uses all their nightkillpower on mafia, mafia kills a town
+        # with no nightkillpower for the upcoming nights. If mafia then comes out having a majority, they should (almost)
+        # always win the game.
+
+        # if mafia numbers equal town going into the next day, usually mafia wins, but there are some drawing/allkill
+        # scenarios we play it safe an continue the game for the time being
+        mafiawin = (mafiacount >= nonmafiacount+nightkillpower)
 
         if townwin:
             self.active = False

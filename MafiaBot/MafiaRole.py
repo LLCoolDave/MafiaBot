@@ -26,3 +26,6 @@ class MafiaRole(object):
 
     def BeginNightPhase(self, mb, player, bot):
         return ''
+
+    def NightKillPower(self):
+        return 0

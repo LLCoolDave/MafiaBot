@@ -55,7 +55,7 @@ class Cop(MafiaRole):
     def BeginNightPhase(self, mb, player, bot):
         if not self.limiteduses == 0:
             self.requiredaction = True
-            ret = 'Cop: You may check a player\'s alignment tonight. Use !check <player> to investigate that player.'
+            ret = 'Cop: You may check another player\'s alignment tonight. Use !check <player> to investigate that player.'
             if self.limiteduses > -1:
                 ret += ' You have '+str(self.limiteduses)+' uses remaining.'
             return ret
