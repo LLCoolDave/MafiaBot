@@ -186,7 +186,11 @@ class MafiaBot:
                 return 'I do not know the role '+param
 
         elif command == 'setup':
-            return self.setup.HandleCommand(param, self)
+            if param == 'reset':
+                self.setup = MafiaSetup()
+                return "Reset setup!"
+            else:
+                return self.setup.HandleCommand(param, self)
 
         # template
         elif command == '':
