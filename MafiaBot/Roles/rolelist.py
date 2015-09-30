@@ -6,6 +6,8 @@ from Cop import Cop
 from RoleCop import RoleCop
 from Jailer import Jailer
 from Vigilante import Vigilante
+from Tracker import Tracker
+from Watcher import Watcher
 
 Roles = {'goon': Goon,
          'civilian': Civilian, 'vt': Civilian, 'townie': Civilian,
@@ -14,4 +16,6 @@ Roles = {'goon': Goon,
          'cop': Cop,
          'rolecop': RoleCop, 'role cop': RoleCop,
          'jailer': Jailer,
-         'vigilante': Vigilante, 'vig': Vigilante}
+         'vigilante': Vigilante, 'vig': Vigilante,
+         'tracker': Tracker,
+         'watcher': Watcher}

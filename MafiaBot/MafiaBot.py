@@ -394,6 +394,30 @@ class MafiaBot:
                 else:
                     bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to not have a role at all. Strange.')
 
+        # handle trackings
+        tracks = [action for action in self.actionlist if action.actiontype == MafiaAction.TRACK]
+        for track in tracks:
+            if track.source in blockset:
+                bot.msg(track.source, 'You were blocked tonight.')
+            else:
+                visits = [action.target for action in self.actionlist if (action.source == track.target and action.visiting and (action.actiontype == MafiaAction.BLOCK or action.source not in blockset))]
+                if visits:
+                    bot.msg(track.source, str(track.target)+' visited the following players tonight: '+', '.join(visits))
+                else:
+                    bot.msg(track.source, str(track.target)+' did not visit anybody tonight.')
+                    
+        # handle watches
+        watchs = [action for action in self.actionlist if action.actiontype == MafiaAction.WATCH]
+        for watch in watchs:
+            if watch.source in blockset:
+                bot.msg(watch.source, 'You were blocked tonight.')
+            else:
+                visits = [action.target for action in self.actionlist if (action.target == watch.target and action.visiting and (action.actiontype == MafiaAction.BLOCK or action.source not in blockset))]
+                if visits:
+                    bot.msg(watch.source, str(watch.target)+' was visited by the following players tonight: '+', '.join(visits))
+                else:
+                    bot.msg(watch.source, str(watch.target)+' was not visited tonight.')
+
         # handle kill actions
         killlist = [action for action in self.actionlist if action.actiontype == MafiaAction.KILL and action.source not in blockset]
         for kill in killlist:
