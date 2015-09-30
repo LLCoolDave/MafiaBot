@@ -66,7 +66,7 @@ def PlayerAction(bot, trigger):
         bot.msg(trigger.nick, response, max_messages=10)
 
 
-@module.commands('role', 'roles', 'deadchat', 'votes', 'players', 'join', 'setup', 'setsetup', 'phase')
+@module.commands('role', 'roles', 'deadchat', 'votes', 'players', 'join', 'setup', 'phase', 'drop')
 def Generic(bot, trigger):
     response = bot.memory['MafiaBotDir'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
     if response is not None:

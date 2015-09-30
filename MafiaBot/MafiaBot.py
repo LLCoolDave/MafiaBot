@@ -6,6 +6,7 @@ from sopel.tools import Identifier
 from MafiaAction import MafiaAction
 from MafiaRole import MafiaRole
 from Roles.rolelist import Roles
+from MafiaSetup import MafiaSetup
 
 class MafiaBot:
 
@@ -33,6 +34,7 @@ class MafiaBot:
         self.revealrolesondeath = True
         self.revealfactionondeath = True
         self.factionkills = 0
+        self.setup = None
 
         self.ResetGame()
 
@@ -58,6 +60,7 @@ class MafiaBot:
         self.revealrolesondeath = True
         self.revealfactionondeath = True
         self.factionkills = 0
+        self.setup = MafiaSetup()
 
     def HandlePlayerCommand(self, command, source, nick, param, bot):
         if nick in self.players:
@@ -88,9 +91,14 @@ class MafiaBot:
                 bot.msg(self.mainchannel, nick + ' has joined the game. There are currently '+str(len(self.players))+' Players in the game.', dict())
             return None
 
-        elif command == 'start':
-            self.StartGame(bot)
+        elif command == 'drop':
+            if not self.active and nick in self.players:
+                del self.players[nick]
+                bot.msg(self.mainchannel, nick + ' has dropped from the game. There are currently '+str(len(self.players))+' Players in the game.', dict())
             return None
+
+        elif command == 'start':
+            return self.StartGame(bot)
 
         elif command == 'vote':
             if self.active and self.phase == self.DAYPHASE and nick in self.players:
@@ -176,6 +184,9 @@ class MafiaBot:
                 return Roles[param.lower()].GetRoleDescription()
             else:
                 return 'I do not know the role '+param
+
+        elif command == 'setup':
+            return self.setup.HandleCommand(param, self)
 
         # template
         elif command == '':
@@ -310,6 +321,11 @@ class MafiaBot:
         return mafiawin or townwin
 
     def StartGame(self, bot):
+        # check if the right number of players are in the game
+        requiredplayers = self.setup.GetRequiredPlayers()
+        if requiredplayers > 0:
+            if not len(self.players) == requiredplayers:
+                return 'This setup requires '+str(requiredplayers)+' players. There are currenty '+str(len(self.players))+' players signed up for the game.'
         self.active = True
         self.votes = dict()
         self.AssignRoles()
@@ -319,24 +335,10 @@ class MafiaBot:
             # send role PM to all of the players
             bot.msg(player, self[player].GetRolePM())
         bot.msg(self.mainchannel, 'The game has started! It is now Day 1.', dict())
+        return None
 
     def AssignRoles(self):
-        # ToDo Proper handling of this
-        # for now, we use a simple system to assign goons and Townies
-        playercount = len(self.players)
-        mafiacount = (playercount / 5) + 1  # 20% mafia for the start
-        if playercount == 7:
-            # use the basic setup
-            mafiacount = 2
-            rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon', dict()),
-                        (MafiaPlayer.FACTION_MAFIA, 'prostitute', dict()),
-                        (MafiaPlayer.FACTION_TOWN, 'cop', dict()),
-                        (MafiaPlayer.FACTION_TOWN, 'medic', dict()),
-                        (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),
-                        (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),
-                        (MafiaPlayer.FACTION_TOWN, 'civilian', dict())]
-        else:
-            rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon', dict())]*mafiacount + [(MafiaPlayer.FACTION_TOWN, 'civilian', dict())]*(playercount-mafiacount)
+        rolelist = self.setup.GetRoleList(self)
         random.shuffle(rolelist)
         # assign roles to players
         i = 0
