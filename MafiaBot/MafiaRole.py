@@ -7,7 +7,7 @@ class MafiaRole(object):
         self.mandatoryaction = False
         self.requiredaction = False
         if 'limiteduses' in settings:
-            self.limiteduses = settings['limiteduses']
+            self.limiteduses = int(settings['limiteduses'])
         else:
             self.limiteduses = -1
 

@@ -56,7 +56,7 @@ class MafiaBot:
         self.phase = self.DAYPHASE
         self.votes = dict()
         self.actionlist = list()
-        self.daycount = 1
+        self.daycount = 0
         self.revealrolesondeath = True
         self.revealfactionondeath = True
         self.factionkills = 0
@@ -190,7 +190,7 @@ class MafiaBot:
                 self.setup = MafiaSetup()
                 return "Reset setup!"
             else:
-                return self.setup.HandleCommand(param, self)
+                return self.setup.HandleCommand(nick, param, self)
 
         # template
         elif command == '':
@@ -338,7 +338,11 @@ class MafiaBot:
             self.votes[player] = self.NOVOTE
             # send role PM to all of the players
             bot.msg(player, self[player].GetRolePM())
-        bot.msg(self.mainchannel, 'The game has started! It is now Day 1.', dict())
+        bot.msg(self.mainchannel, 'The game has started!')
+        if self.setup.GetDaystart():
+            bot.msg(self.mainchannel, 'It is now day 0.')
+        else:
+            self.BeginNightPhase(bot)
         return None
 
     def AssignRoles(self):
@@ -441,6 +445,7 @@ class MafiaBot:
             if not self.players[player].IsDead():
                 self.votes[player] = self.NOVOTE
                 self.players[player].BeginNightPhase(self, bot)
+        self.daycount += 1
         self.phase = self.NIGHTPHASE
         self.factionkills = 1
         bot.msg(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.', dict())
@@ -470,7 +475,6 @@ class MafiaBot:
             if not requiredactions:
                 self.HandleActionList(bot)
                 if not self.CheckForWinCondition(bot):
-                    self.daycount += 1
                     self.phase = self.DAYPHASE
                     bot.msg(self.mainchannel, 'Day '+str(self.daycount)+' has just begun. The Town consists of '+self.GetPlayers())
 

@@ -62,6 +62,7 @@ def LogOn():
 def JoinAndStart():
     for player in playerlist:
         SendCommand('join', mainchannel, player, '')
+    SendCommand('setup', mainchannel, playerlist[0], 'load basic7')
     SendCommand('players', mainchannel, playerlist[0], '')
     #test votes command
     SendCommand('votes', mainchannel, playerlist[2], '')
