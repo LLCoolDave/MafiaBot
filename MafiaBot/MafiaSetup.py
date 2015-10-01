@@ -32,7 +32,10 @@ class MafiaSetup(object):
         return self.daystart
 
     def HandleCommand(self, nick, rawcommand, mafiabot):
-        params = rawcommand.split()
+        if rawcommand is not None:
+            params = rawcommand.split()
+        else:
+            params = None
         retstr = None
         if not params:
             # plain !setup command was issued, return information on the setup
@@ -97,13 +100,13 @@ class MafiaSetup(object):
                 uses = -1
             settings['limiteduses'] = uses
             retstr += ' with '+str(uses)+' uses'
-        retstr += ' and additional parameters:'
+        retstr += ' with additional parameters:'
         for param in params[3:]:
             split = param.split('=')
             if len(split) == 2:
                 settings[split[0]] = split[1]
                 retstr += ' '+param
-        self.rolelist.append((faction, params[0], settings))
+        self.rolelist.append((faction, params[1], settings))
         self.requiredplayers += 1
         return retstr
 
@@ -154,12 +157,16 @@ class MafiaSetup(object):
             daystartstr = 'day-start'
         else:
             daystartstr = 'night-start'
-        retstr = 'This is an open '+daystartstr+' setup for '+str(self.requiredplayers)+' players. It features the following roles:\n'
+        if self.closed:
+            closedstr = 'a closed'
+        else:
+            closedstr = 'an open'
+        retstr = 'This is '+closedstr+' '+daystartstr+' setup for '+str(self.requiredplayers)+' players. It features the following roles:'
         i = 0
         for role in self.rolelist:
-            retstr += str(i) + ': '+self._RoleToString(role)+' '
+            retstr += ' '+str(i) + ': '+self._RoleToString(role)
             i += 1
-        return retstr.rstrip()
+        return retstr
 
     def GetRoleList(self, mb):
         if self.predefined:
