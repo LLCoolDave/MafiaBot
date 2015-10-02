@@ -130,7 +130,7 @@ class MafiaBot:
 
         elif command == 'time':
             if self.active and self.phase == self.DAYPHASE:
-                timepassed = int(self.time - time.clock())
+                timepassed = int(time.clock() - self.time)
                 hours = timepassed / 3600
                 minutes = (timepassed % 3600) / 60
                 seconds = timepassed % 60
