@@ -243,7 +243,7 @@ class MafiaBot:
                 # check for majority
                 cnt = 0
                 for vote in self.votes.values():
-                    if vote == param:
+                    if vote.lower() == param.lower():
                         cnt += 1
                 if cnt > len(self.votes)/2:
                     # majority
@@ -271,6 +271,8 @@ class MafiaBot:
                 bot.msg(self.mainchannel, player+playerflip+' was lynched today!', max_messages=10)
         if not self.CheckForWinCondition(bot):
             self.BeginNightPhase(bot)
+        else:
+            self.ResetGame()
 
     def CheckForWinCondition(self, bot):
         # check for victory condition
@@ -436,6 +438,7 @@ class MafiaBot:
                     bot.msg(watch.source, str(watch.target)+' was not visited tonight.')
 
         # handle kill actions
+        nokills = True
         killlist = [action for action in self.actionlist if action.actiontype == MafiaAction.KILL and action.source not in blockset]
         for kill in killlist:
             # check if a player was protected
@@ -447,8 +450,10 @@ class MafiaBot:
             if not skip:
                 killstatus, flipmsg = self.players[kill.target].Kill(self, bot, True)
                 if killstatus:
+                    nokills = False
                     bot.msg(self.mainchannel, kill.target+flipmsg+' has died tonight!', max_messages=10)
-
+        if not nokills:
+            bot.msg(self.mainchannel, 'Nobody has died tonight!', max_messages=10)
         # reset actionlist
         self.actionlist = []
 
@@ -510,3 +515,5 @@ class MafiaBot:
                 if not self.CheckForWinCondition(bot):
                     self.phase = self.DAYPHASE
                     bot.msg(self.mainchannel, 'Day '+str(self.daycount)+' has just begun. The Town consists of '+self.GetPlayers())
+                else:
+                    self.ResetGame()

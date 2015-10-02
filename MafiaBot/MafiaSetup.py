@@ -133,7 +133,7 @@ class MafiaSetup(object):
             faction = MafiaPlayer.FACTION_TOWN
         else:
             return 'I do not know the faction '+params[0]
-        if not params[1] in Roles:
+        if not params[1].lower() in Roles:
             return 'I do not know the role '+params[1]
         retstr = 'Added '+params[0]+' '+params[1]
         settings = dict()
@@ -150,7 +150,7 @@ class MafiaSetup(object):
             if len(split) == 2:
                 settings[split[0]] = split[1]
                 retstr += ' '+param
-        self.rolelist.append((faction, params[1], settings))
+        self.rolelist.append((faction, params[1].lower(), settings))
         self.requiredplayers += 1
         return retstr
 
