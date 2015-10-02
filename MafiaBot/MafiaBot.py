@@ -514,6 +514,11 @@ class MafiaBot:
                 self.HandleActionList(bot)
                 if not self.CheckForWinCondition(bot):
                     self.phase = self.DAYPHASE
+                    # reset votes
+                    self.votes = dict()
+                    for player in self.players:
+                        if not self.players[player].IsDead():
+                            self.votes[player] = self.NOVOTE
                     bot.msg(self.mainchannel, 'Day '+str(self.daycount)+' has just begun. The Town consists of '+self.GetPlayers())
                 else:
                     self.ResetGame()
