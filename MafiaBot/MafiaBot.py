@@ -450,6 +450,23 @@ class MafiaBot:
                 else:
                     bot.msg(watch.source, str(watch.target)+' was not visited tonight.')
 
+        # handle corrupt bureaucrat
+        bureaucrats = [action for action in self.actionlist if action.actiontype == MafiaAction.CORRUPTBUREAUCRAT]
+        for bureaucrat in bureaucrats:
+            if bureaucrat.source in blockset:
+                bot.msg(bureaucrat.source, 'You were blocked tonight.')
+            else:
+                rolelist = []
+                for player in self.players.values():
+                    if not player.IsDead():
+                        if player.role is not None:
+                            rolestr = player.role.GetRoleName()
+                        else:
+                            rolestr = 'None'
+                        rolelist.append(rolestr)
+                random.shuffle(rolelist)
+                bot.msg(bureaucrat.source, 'The following roles were alive going into the night: '+', '.join(rolelist), max_messages=10)
+
         # handle kill actions
         nokills = True
         killlist = [action for action in self.actionlist if action.actiontype == MafiaAction.KILL and action.source not in blockset]
