@@ -190,6 +190,17 @@ class MafiaBot:
             else:
                 return self.setup.HandleCommand(nick, param, self)
 
+        elif command == 'roles':
+            if self.active:
+                if not source == nick and not source == self.deadchat:
+                    return None
+                if nick in self.players:
+                    if not self.players[nick].IsDead():
+                        return None
+                # it is save to reply
+                return 'The roles this game are - '+self.GetRoleList()
+            return None
+
         # template
         elif command == '':
             return None
@@ -308,6 +319,7 @@ class MafiaBot:
             townies = [str(self.players[player].name) for player in self.players if self.players[player].faction == MafiaPlayer.FACTION_TOWN]
             playerstr = ', '.join(townies)
             bot.msg(self.mainchannel, 'Town wins this game! Congratulations to '+playerstr, max_messages=10)
+            bot.msg(self.mainchannel, 'The roles this game were - '+self.GetRoleList(), max_messages=10)
 
         elif specialwin:
             self.active = False
@@ -319,6 +331,7 @@ class MafiaBot:
             mafia = [str(self.players[player].name) for player in self.players if self.players[player].faction == MafiaPlayer.FACTION_MAFIA]
             playerstr = ', '.join(mafia)
             bot.msg(self.mainchannel, 'Mafia wins this game! Congratulations to '+playerstr, max_messages=10)
+            bot.msg(self.mainchannel, 'The roles this game were - '+self.GetRoleList(), max_messages=10)
 
         return mafiawin or townwin
 
@@ -436,6 +449,26 @@ class MafiaBot:
 
         # reset actionlist
         self.actionlist = []
+
+    def GetRoleList(self):
+        retstr = ''
+        for player in self.players.values():
+            if player.IsDead():
+                deadstr = ' (Dead)'
+            else:
+                deadstr = ''
+            if player.faction == MafiaPlayer.FACTION_MAFIA:
+                factionstr = 'Mafia'
+            elif player.faction == MafiaPlayer.FACTION_TOWN:
+                factionstr = 'Town'
+            else:
+                factionstr = ''
+            if player.role is not None:
+                rolestr = player.role.GetRoleName()
+            else:
+                rolestr = ''
+            retstr += str(player.name) + deadstr + ': ' + factionstr + ' ' + rolestr + '  '
+        return retstr.rstrip()
 
     def BeginNightPhase(self, bot):
         self.votes = dict()

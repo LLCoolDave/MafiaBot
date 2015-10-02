@@ -77,6 +77,8 @@ def Vote(player, target='NoLynch'):
 def PassDay(target='NoLynch'):
     for player in playerlist:
         Vote(player, target)
+        SendCommand('roles', mainchannel, player, '')
+        SendCommand('roles', deadchat, player, '')
 
 def BreakPoint():
     pass
