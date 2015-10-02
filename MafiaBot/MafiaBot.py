@@ -256,9 +256,9 @@ class MafiaBot:
         msg = 'Current Votes -  '
         for pair in self.votes.items():
             if pair[1] == self.NOVOTE:
-                msg += pair[0] + ': No Vote '
+                msg += '\x02' + pair[0] + '\x02: No Vote '
             else:
-                msg += pair[0] + ': ' + pair[1] + ' '
+                msg += '\x02' + pair[0] + '\x02: ' + pair[1] + ' '
         msg += ' - ' + str(len(self.votes)/2 + 1) + ' votes required for a lynch.'
         bot.msg(self.mainchannel, msg, max_messages=10)
 
@@ -474,7 +474,7 @@ class MafiaBot:
                 rolestr = player.role.GetRoleName()
             else:
                 rolestr = ''
-            retstr += str(player.name) + deadstr + ': ' + factionstr + ' ' + rolestr + '  '
+            retstr += '\x02' + str(player.name) + '\x02' + deadstr + ': ' + factionstr + ' ' + rolestr + '  '
         return retstr.rstrip()
 
     def BeginNightPhase(self, bot):
