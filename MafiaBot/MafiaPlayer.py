@@ -1,6 +1,5 @@
-__author__ = 'LLCoolDave'
-
 from MafiaItem import MafiaItem
+
 
 class MafiaPlayer:
 
@@ -26,7 +25,7 @@ class MafiaPlayer:
         if self.faction == self.FACTION_TOWN:
             ret += 'You are aligned with the Town. You win if only people aligned with town are left alive.\n'
         elif self.faction == self.FACTION_MAFIA:
-            ret += 'You are aligned with the Mafia. You win if the Mafia are the only players left alive or this cannot be prevented anymore. Join '+ self.mafiachannel + ' to meet your fellow mafia partners.\n'
+            ret += 'You are aligned with the Mafia. You win if the Mafia are the only players left alive or this cannot be prevented anymore. Join ' + self.mafiachannel + ' to meet your fellow mafia partners.\n'
         if self.role is not None:
             ret += self.role.GetRolePM()
         return ret

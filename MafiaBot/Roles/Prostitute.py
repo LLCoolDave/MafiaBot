@@ -2,6 +2,7 @@ from MafiaBot.MafiaRole import MafiaRole
 from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 
+
 class Prostitute(MafiaRole):
 
     def __init__(self, settings=dict()):

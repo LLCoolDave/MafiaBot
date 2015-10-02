@@ -1,15 +1,17 @@
 from MafiaPlayer import MafiaPlayer
 from Roles.rolelist import Roles
 
+
 def Basic7(playercount):
     rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon', dict()),
-            (MafiaPlayer.FACTION_MAFIA, 'prostitute', dict()),
-            (MafiaPlayer.FACTION_TOWN, 'cop', {'limiteduses': 1}),
-            (MafiaPlayer.FACTION_TOWN, 'medic', dict()),
-            (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),
-            (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),
-            (MafiaPlayer.FACTION_TOWN, 'civilian', dict())]
+                (MafiaPlayer.FACTION_MAFIA, 'prostitute', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'cop', {'limiteduses': 1}),
+                (MafiaPlayer.FACTION_TOWN, 'medic', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'civilian', dict())]
     return rolelist
+
 
 class MafiaSetup(object):
 
@@ -40,7 +42,7 @@ class MafiaSetup(object):
         if not params:
             # plain !setup command was issued, return information on the setup
             retstr = self.GetSetupDescription(nick, mafiabot)
-        elif (not self.closed) or self.admin == nick:
+        elif (not mafiabot.active) and ((not self.closed) or self.admin == nick):
             if params[0] == 'load':
                 retstr = self.LoadPredefinedSetup(params[1:], mafiabot)
             elif params[0] == 'closed':
@@ -124,7 +126,7 @@ class MafiaSetup(object):
             return 'Could not remove role with index '+params[0]+'. This is either not a number or this index does not exist currently.'
 
     def _RoleToString(self, role):
-        #ToDo better display
+        # ToDo better display
         if role[0] == MafiaPlayer.FACTION_MAFIA:
             factionstr = 'Mafia'
         elif role[0] == MafiaPlayer.FACTION_TOWN:

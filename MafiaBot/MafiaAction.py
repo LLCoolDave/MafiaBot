@@ -1,5 +1,3 @@
-__author__ = 'LLCoolDave'
-
 class MafiaAction:
 
     KILL = 0

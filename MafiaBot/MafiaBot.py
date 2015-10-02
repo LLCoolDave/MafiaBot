@@ -1,5 +1,3 @@
-__author__ = 'LLCoolDave'
-
 import random
 from MafiaPlayer import MafiaPlayer
 from sopel.tools import Identifier
@@ -7,6 +5,7 @@ from MafiaAction import MafiaAction
 from MafiaRole import MafiaRole
 from Roles.rolelist import Roles
 from MafiaSetup import MafiaSetup
+
 
 class MafiaBot:
 
@@ -18,7 +17,6 @@ class MafiaBot:
     PhaseStr = {0: 'Dawn', 1: 'Day', 2: 'Dusk', 3: 'Night'}
 
     NOVOTE = ''
-
 
     def __init__(self):
         self.deadchat = ''
@@ -40,7 +38,7 @@ class MafiaBot:
 
     def __getitem__(self, item):
         try:
-           return self.players[item]
+            return self.players[item]
         except:
             return None
 
@@ -202,7 +200,7 @@ class MafiaBot:
         msg = ''
         for player in self.players.keys():
             if self.active:
-                #if game is going only add alive players
+                # if game is going only add alive players
                 if not self.players[player].IsDead():
                     msg += player + ', '
             else:
@@ -236,8 +234,8 @@ class MafiaBot:
                 for vote in self.votes.values():
                     if vote == param:
                         cnt += 1
-                if cnt > len(self.votes)/2 :
-                    #majority
+                if cnt > len(self.votes)/2:
+                    # majority
                     self.Lynch(Identifier(param), bot)
                 else:
                     # print current votes
@@ -362,7 +360,7 @@ class MafiaBot:
                 if rolelist[i][1] in Roles:
                     player.role = Roles[rolelist[i][1]](rolelist[i][2])
                 else:
-                    #create dummy role
+                    # create dummy role
                     player.role = MafiaRole()
             i += 1
 
@@ -468,7 +466,7 @@ class MafiaBot:
             requiredactions = False
             for player in self.players:
                 if not self.players[player].IsDead():
-                    if self.players[player].requiredaction == True:
+                    if self.players[player].requiredaction:
                         requiredactions = True
             if self.factionkills > 0:
                 requiredactions = True
@@ -477,4 +475,3 @@ class MafiaBot:
                 if not self.CheckForWinCondition(bot):
                     self.phase = self.DAYPHASE
                     bot.msg(self.mainchannel, 'Day '+str(self.daycount)+' has just begun. The Town consists of '+self.GetPlayers())
-

@@ -1,5 +1,3 @@
-__author__ = 'LLCoolDave'
-
 class MafiaItem(object):
 
     GUN = 0

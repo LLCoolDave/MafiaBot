@@ -3,6 +3,7 @@ import MafiaBot.MafiaBot
 
 # ToDo: Modify bot.msg to reduce wait time, otherwise things are way too slow and blocked due to the threadlock on mb
 
+
 def setup(bot):
     mb = MafiaBot.MafiaBot.MafiaBot()
     bot.memory['MafiaBotDir'] = mb
