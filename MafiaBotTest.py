@@ -63,6 +63,7 @@ def JoinAndStart():
     for player in playerlist:
         SendCommand('join', mainchannel, player, '')
     SendCommand('setup', mainchannel, playerlist[0], 'load basic7')
+    SendCommand('setup', mainchannel, playerlist[0], 'reveal faction')
     SendCommand('players', mainchannel, playerlist[0], '')
     #test votes command
     SendCommand('votes', mainchannel, playerlist[2], '')

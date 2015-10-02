@@ -22,7 +22,7 @@ class MafiaBot:
         self.deadchat = ''
         self.mafiachannels = []
         self.players = dict()
-        self.mainchannel = '#mafiabotdebug'
+        self.mainchannel = '#fridaynightmafia'
         self.joinchannels = False
         self.active = False
         self.phase = self.DAYPHASE
@@ -47,7 +47,7 @@ class MafiaBot:
 
     def ResetGame(self):
         self.deadchat = '#deadchat'+str(random.randrange(10000))
-        self.mafiachannels = ['#mafiadebug']  # ['#mafia'+str(random.randrange(10000))]
+        self.mafiachannels = ['#mafia'+str(random.randrange(10000))]
         self.players = dict()
         self.joinchannels = True
         self.active = False
@@ -146,7 +146,7 @@ class MafiaBot:
                             # check if player exists, is alive
                             identparam = Identifier(param)
                             if identparam in self.players:
-                                if not self.players[identparam].IsDead():
+                                if not self.players[identparam].IsDead() and not self.players[identparam].faction == MafiaPlayer.FACTION_MAFIA:
                                     # player can be killed, so we add the action
                                     self.actionlist.append(MafiaAction(MafiaAction.KILL, nick, identparam, True))
                                     self.factionkills -= 1
@@ -343,6 +343,8 @@ class MafiaBot:
                 return 'This setup requires '+str(requiredplayers)+' players. There are currenty '+str(len(self.players))+' players signed up for the game.'
         self.active = True
         self.votes = dict()
+        self.revealrolesondeath = self.setup.revealrole
+        self.revealfactionondeath = self.setup.revealfaction
         self.AssignRoles()
         for player in self.players.keys():
             self[player].dead = False

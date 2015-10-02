@@ -26,6 +26,8 @@ class MafiaSetup(object):
         self.closed = False
         self.admin = None
         self.daystart = False
+        self.revealfaction = True
+        self.revealrole = True
 
     def GetRequiredPlayers(self):
         return self.requiredplayers
@@ -49,6 +51,22 @@ class MafiaSetup(object):
                 self.closed = True
                 self.admin = nick
                 retstr = "Setup is now closed. Only you may modify and look at it further."
+            elif params[0] == 'reveal':
+                if len(params) > 1:
+                    if params[1] == 'role':
+                        self.revealrole = True
+                        retstr = "Roles are now revealed on death."
+                    elif params[1] == 'faction':
+                        self.revealfaction = True
+                        retstr = "Factions are now revealed on death."
+            elif params[0] == 'hide':
+                if len(params) > 1:
+                    if params[1] == 'role':
+                        self.revealrole = False
+                        retstr = "Roles are now hidden on death."
+                    elif params[1] == 'faction':
+                        self.revealfaction = False
+                        retstr = "Factions are now hidden on death."
             elif params[0] == 'open':
                 self.closed = False
                 self.admin = None
