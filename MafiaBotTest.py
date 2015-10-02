@@ -76,6 +76,7 @@ def Vote(player, target='NoLynch'):
     SendCommand('vote', mainchannel, player, strtar)
 
 def PassDay(target='NoLynch'):
+    SendCommand('time', mainchannel, playerlist[0], '')
     for player in playerlist:
         Vote(player, target)
         SendCommand('roles', mainchannel, player, '')

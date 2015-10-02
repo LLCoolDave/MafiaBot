@@ -465,7 +465,7 @@ class MafiaBot:
                 if killstatus:
                     nokills = False
                     bot.msg(self.mainchannel, kill.target+flipmsg+' has died tonight!', max_messages=10)
-        if not nokills:
+        if nokills:
             bot.msg(self.mainchannel, 'Nobody has died tonight!', max_messages=10)
         # reset actionlist
         self.actionlist = []
@@ -491,15 +491,15 @@ class MafiaBot:
         return retstr.rstrip()
 
     def BeginNightPhase(self, bot):
+        self.daycount += 1
+        self.phase = self.NIGHTPHASE
+        bot.msg(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.')
         self.votes = dict()
         for player in self.players:
             if not self.players[player].IsDead():
                 self.votes[player] = self.NOVOTE
                 self.players[player].BeginNightPhase(self, bot)
-        self.daycount += 1
-        self.phase = self.NIGHTPHASE
         self.factionkills = 1
-        bot.msg(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.')
         for mafiach in self.mafiachannels:
             bot.msg(mafiach, 'You have '+str(self.factionkills)+' kills tonight. Use !kill <target> to use them. The player issuing the command will carry out the kill. Use !nokill to pass on the remaining faction kills for the night.')
 
