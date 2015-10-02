@@ -1,5 +1,6 @@
 from MafiaPlayer import MafiaPlayer
 from Roles.rolelist import Roles
+import random
 
 
 def Basic7(playercount):
@@ -13,10 +14,33 @@ def Basic7(playercount):
     return rolelist
 
 
+def C9(playercount):
+    rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon', dict()),
+                (MafiaPlayer.FACTION_MAFIA, 'goon', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'civilian', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'civilian', dict())]
+    rnd = random.randint(1, 4)
+    if rnd == 1:
+        rolelist.append((MafiaPlayer.FACTION_TOWN, 'cop', dict()))
+        rolelist.append((MafiaPlayer.FACTION_TOWN, 'medic', dict()))
+    elif rnd == 2:
+        rolelist.append((MafiaPlayer.FACTION_TOWN, 'cop', dict()))
+        rolelist.append((MafiaPlayer.FACTION_TOWN, 'civilian', dict()))
+    elif rnd == 3:
+        rolelist.append((MafiaPlayer.FACTION_TOWN, 'civilian', dict()))
+        rolelist.append((MafiaPlayer.FACTION_TOWN, 'medic', dict()))
+    elif rnd == 4:
+        rolelist.append((MafiaPlayer.FACTION_TOWN, 'civilian', dict()))
+        rolelist.append((MafiaPlayer.FACTION_TOWN, 'civilian', dict()))
+    return rolelist
+
+
 class MafiaSetup(object):
 
     # template: 'shortname': ('setup name', required_players #None to use value from self.requiredplayers, 'Setup description', function(playercount) #returns rolelist)
-    PREDEFINED = {'basic7': ('Basic 7', 7, '1 Mafia Goon, 1 Mafia Prostitute, 1 One-Shot Cop, 1 Medic, 3 Civilians', Basic7)}
+    PREDEFINED = {'basic7': ('Basic 7', 7, '1 Mafia Goon, 1 Mafia Prostitute, 1 One-Shot Cop, 1 Medic, 3 Civilians', Basic7),
+                  'c9': ('C9', 7, 'http://wiki.mafiascum.net/index.php?title=C9', C9)}
 
     def __init__(self):
         self.requiredplayers = 0

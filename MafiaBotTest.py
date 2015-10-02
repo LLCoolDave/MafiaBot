@@ -92,12 +92,21 @@ def Main():
     scums = [player for player in playerlist if mb.players[player].faction == MafiaPlayer.FACTION_MAFIA]
     # get prostitute
     prostitutes = [player for player in playerlist if isinstance(mb.players[player].role, Roles['prostitute'])]
-    pros = prostitutes[0]
+    if prostitutes:
+        pros = prostitutes[0]
+    else:
+        pros = None
     # get prostitute
     medics = [player for player in playerlist if isinstance(mb.players[player].role, Roles['medic'])]
-    medic = medics[0]
+    if medics:
+        medic = medics[0]
+    else:
+        medic = None
     cops = [player for player in playerlist if isinstance(mb.players[player].role, Roles['cop'])]
-    cop = cops[0]
+    if cops:
+        cop = cops[0]
+    else:
+        cop = None
     if scums[0] in prostitutes:
         scum = scums[1]
     else:
