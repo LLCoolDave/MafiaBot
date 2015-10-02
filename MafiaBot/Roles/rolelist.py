@@ -8,6 +8,8 @@ from Jailer import Jailer
 from Vigilante import Vigilante
 from Tracker import Tracker
 from Watcher import Watcher
+from Sleepwalker import Sleepwalker
+from Oracle import Oracle
 
 Roles = {'goon': Goon,
          'civilian': Civilian, 'vt': Civilian, 'townie': Civilian,
@@ -18,4 +20,6 @@ Roles = {'goon': Goon,
          'jailer': Jailer,
          'vigilante': Vigilante, 'vig': Vigilante,
          'tracker': Tracker,
-         'watcher': Watcher}
+         'watcher': Watcher,
+         'sleepwalker': Sleepwalker,
+         'oracle': Oracle}

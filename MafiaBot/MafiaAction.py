@@ -7,6 +7,7 @@ class MafiaAction:
     CHECKFACTION = 4
     TRACK = 5
     WATCH = 6
+    VISIT = 7
 
     def __init__(self, actiontype, source, target, visiting, modifiers=None):
         self.actiontype = actiontype

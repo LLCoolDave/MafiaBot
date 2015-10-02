@@ -29,3 +29,6 @@ class MafiaRole(object):
 
     def NightKillPower(self):
         return 0
+
+    def Kill(self, bot, mafiabot):
+        pass

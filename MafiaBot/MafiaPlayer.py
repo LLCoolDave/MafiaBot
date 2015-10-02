@@ -113,6 +113,8 @@ class MafiaPlayer:
         self.dead = True
         # inform the player that they died
         bot.msg(self.name, "You have died. You may join the dead chat at "+mb.deadchat)
+        if self.role is not None:
+            self.role.Kill(bot, mb)
         flipmsg = ''
         if mb.revealfactionondeath:
             flipmsg += self.GetFaction()
