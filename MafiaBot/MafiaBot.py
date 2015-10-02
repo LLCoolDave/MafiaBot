@@ -1,4 +1,5 @@
 import random
+import time
 from MafiaPlayer import MafiaPlayer
 from sopel.tools import Identifier
 from MafiaAction import MafiaAction
@@ -33,6 +34,7 @@ class MafiaBot:
         self.revealfactionondeath = True
         self.factionkills = 0
         self.setup = None
+        self.time = time.clock()
 
         self.ResetGame()
 
@@ -59,6 +61,7 @@ class MafiaBot:
         self.revealfactionondeath = True
         self.factionkills = 0
         self.setup = MafiaSetup()
+        self.time = time.clock()
 
     def HandlePlayerCommand(self, command, source, nick, param, bot):
         if nick in self.players:
@@ -123,6 +126,15 @@ class MafiaBot:
         elif command == 'votes':
             if self.active and self.phase == self.DAYPHASE:
                 self.PrintVotes(bot)
+            return None
+
+        elif command == 'time':
+            if self.active and self.phase == self.DAYPHASE:
+                timepassed = int(self.time - time.clock())
+                hours = timepassed / 3600
+                minutes = (timepassed % 3600) / 60
+                seconds = timepassed % 60
+                return 'It has been '+str(hours).zfill(1)+':'+str(minutes).zfill(2)+':'+str(seconds).zfill(2)+' since the start of the day.'
             return None
 
         elif command == 'players':
@@ -344,6 +356,7 @@ class MafiaBot:
             if not len(self.players) == requiredplayers:
                 return 'This setup requires '+str(requiredplayers)+' players. There are currenty '+str(len(self.players))+' players signed up for the game.'
         self.active = True
+        self.time = time.clock()
         self.votes = dict()
         self.revealrolesondeath = self.setup.revealrole
         self.revealfactionondeath = self.setup.revealfaction
@@ -514,6 +527,7 @@ class MafiaBot:
                 self.HandleActionList(bot)
                 if not self.CheckForWinCondition(bot):
                     self.phase = self.DAYPHASE
+                    self.time = time.clock()
                     # reset votes
                     self.votes = dict()
                     for player in self.players:
