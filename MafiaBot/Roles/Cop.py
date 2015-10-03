@@ -2,20 +2,15 @@ from MafiaBot.MafiaRole import MafiaRole
 from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 
-class Cop(MafiaRole):
 
-    SANE = 0
-    INSANE = 1
-    PARANOID = 2
-    NAIVE = 3
-    RANDOM = 4
+class Cop(MafiaRole):
 
     def __init__(self, settings=dict()):
         super(Cop, self).__init__(settings)
         if 'sanity' in settings:
             self.sanity = settings['sanity']
         else:
-            self.sanity = Cop.SANE
+            self.sanity = 'sane'
 
     def GetRolePM(self):
         ret = 'You are a Cop. You may check the alignment of another player at night.'

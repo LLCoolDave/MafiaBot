@@ -18,6 +18,7 @@ class MafiaPlayer:
         self.requiredaction = False
         self.mandatoryaction = False
         self.preventtownvictory = False
+        self.itemused = dict()
 
     def IsDead(self):
         return self.dead
@@ -41,6 +42,11 @@ class MafiaPlayer:
             if self.role.mandatoryaction:
                 manaction = True
         for item in self.items.values():
+            # If an item with limited uses per type has already been used this night, we set the required actions of all of those types of items to False
+            if item.type in self.itemused:
+                if self.itemused[item.type]:
+                    item.requiredaction = False
+                    item.mandatoryaction = False
             if item.requiredaction:
                 reqaction = True
             if item.mandatoryaction:
@@ -65,12 +71,19 @@ class MafiaPlayer:
             if param is not None:
                 paramsplits = param.split(' ', 1)
                 if paramsplits[0] in self.items:
+                    # check if the type is limited in use and has already been used tonight:
+                    if self.items[paramsplits[0]].type in self.itemused:
+                        if self.itemused[self.items[paramsplits[0]]]:
+                            return 'You cannot use any more items of this type tonight.'
                     if len(paramsplits) > 1:
                         itemparam = paramsplits[1]
                     else:
                         itemparam = ''
                     returnpair = self.items[paramsplits[0]].HandleCommand(itemparam, self, bot, mb)
                     if returnpair[0]:
+                        # if it is a limited use item type, we mark it as used for the night
+                        if self.items[paramsplits[0]].type in self.itemused:
+                            self.itemused[self.items[paramsplits[0]]] = True
                         del self.items[paramsplits[0]]
                     return returnpair[1]
 
@@ -113,6 +126,8 @@ class MafiaPlayer:
 
     def BeginNightPhase(self, mb, bot):
         nightactionstr = ''
+        # reset limited uses for item types
+        self.itemused = {MafiaItem.GUN: False}
         if self.role is not None:
             nightactionstr += self.role.BeginNightPhase(mb, self, bot)
         for item in self.items.values():
@@ -159,8 +174,10 @@ class MafiaPlayer:
         pass
 
     def NightKillPower(self):
-        # ToDo add item power
+        nkpower = 0
+        # if the player has a real gun his night kill power increases by 1
+        if [item for item in self.items.values() if item.type == MafiaItem.GUN and not item.fake]:
+            nkpower += 1
         if self.role is not None:
-            return self.role.NightKillPower()
-        else:
-            return 0
+            nkpower += self.role.NightKillPower()
+        return nkpower

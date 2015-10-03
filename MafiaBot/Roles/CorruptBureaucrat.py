@@ -1,5 +1,6 @@
 from MafiaBot.MafiaRole import MafiaRole
 from MafiaBot.MafiaAction import MafiaAction
+import random
 
 
 class CorruptBureaucrat(MafiaRole):
@@ -21,7 +22,7 @@ class CorruptBureaucrat(MafiaRole):
         if self.requiredaction:
             if command == 'check':
                 if not self.limiteduses == 0:
-                    mb.actionlist.append(MafiaAction(MafiaAction.CORRUPTBUREAUCRAT, None, None, False))
+                    mb.actionlist.append(MafiaAction(MafiaAction.CALLBACK, player.name, None, False, {'callback': self.ReceiveRoleList}))
                     self.requiredaction = False
                     player.UpdateActions()
                     ret = 'You choose to use your power tonight.'
@@ -40,3 +41,15 @@ class CorruptBureaucrat(MafiaRole):
             return ret
         else:
             return ''
+
+    def ReceiveRoleList(self, source, bot, mafiabot):
+        rolelist = []
+        for player in mafiabot.players.values():
+            if not player.IsDead():
+                if player.role is not None:
+                    rolestr = player.role.GetRoleName()
+                else:
+                    rolestr = 'None'
+                rolelist.append(rolestr)
+        random.shuffle(rolelist)
+        bot.msg(source, 'The following roles were alive going into the night: '+', '.join(rolelist), max_messages=10)

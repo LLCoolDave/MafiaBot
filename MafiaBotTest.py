@@ -40,13 +40,13 @@ class botstub:
 
 def SendCommand(command, source, nick, param):
     reply = mb.HandleCommand(command, source, nick, param, botstub())
-    log.info('COMMAND '+command+' by '+str(nick)+' in '+str(source)+' with parameter \''+param+'\'')
+    log.info('COMMAND '+command+' by '+str(nick)+' in '+str(source)+' with parameter \''+str(param)+'\'')
     if reply is not None:
         log.info('RESPONSE ' + reply)
 
 def SendPlayerCommand(command, source, nick, param):
     reply = mb.HandlePlayerCommand(command, source, nick, param, botstub())
-    log.info('COMMAND '+command+' by '+str(nick)+' in '+str(source)+' with parameter \''+param+'\'')
+    log.info('COMMAND '+command+' by '+str(nick)+' in '+str(source)+' with parameter \''+str(param)+'\'')
     if reply is not None:
         log.info('RESPONSE ' + reply)
 
@@ -120,6 +120,11 @@ def Main():
         bulletproof = bulletproofs[0]
     else:
         bulletproof = None
+    corruptbureaucrats = [player for player in playerlist if isinstance(mb.players[player].role, Roles['corruptbureaucrat'])]
+    if corruptbureaucrats:
+        corruptbureaucrat = corruptbureaucrats[0]
+    else:
+        corruptbureaucrat = None
     vigilantes = [player for player in playerlist if isinstance(mb.players[player].role, Roles['vigilante'])]
     if vigilantes:
         vigilante = vigilantes[0]
@@ -139,12 +144,13 @@ def Main():
         PassDay(playerlist[i])
         # LogOff()
         SendCommand('item', bulletproof, bulletproof, 'vest')
+        SendPlayerCommand('check', corruptbureaucrat, corruptbureaucrat, '')
         SendPlayerCommand('pass', pros, pros, cop)
         SendPlayerCommand('pass', medic, medic, playerlist[0])
         SendPlayerCommand('pass', cop, cop, playerlist[0])
-        SendPlayerCommand('pass', tracker, tracker, vigilante)
+        SendPlayerCommand('pass', tracker, tracker, cop)
         SendPlayerCommand('pass', watcher, watcher, cop)
-        SendPlayerCommand('shoot', vigilante, vigilante, bulletproof)
+        SendPlayerCommand('pass', vigilante, vigilante, cop)
         SendCommand('nokill', mafiachannel, scum, playerlist[0])
         SendCommand('nokill', mafiachannel, pros, playerlist[0])
         LogOn()

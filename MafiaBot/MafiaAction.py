@@ -8,8 +8,10 @@ class MafiaAction:
     TRACK = 5
     WATCH = 6
     VISIT = 7
-    CORRUPTBUREAUCRAT = 8
-    SENDITEM = 9
+    SENDITEM = 8
+
+    # for generic callbacks
+    CALLBACK = 255
 
     def __init__(self, actiontype, source, target, visiting, modifiers=None):
         self.actiontype = actiontype

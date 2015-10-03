@@ -426,8 +426,26 @@ class MafiaBot:
             if check.source in blockset:
                 bot.msg(check.source, 'You were blocked tonight.')
             else:
-                # ToDo: check sanity here
-                bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to be aligned with '+self.players[check.target].GetFaction()+'.')
+                faction = self.players[check.target].GetFaction()
+                if 'sanity' in check.modifiers:
+                    sanity = check.modifiers['sanity']
+                    if sanity == 'insane':
+                        if faction == 'Town':
+                            faction = 'Mafia'
+                        elif faction == 'Mafia':
+                            faction = 'Town'
+                    elif sanity == 'naive':
+                        faction = 'Town'
+                    elif sanity == 'paranoid':
+                        faction = 'Mafia'
+                    elif sanity == 'random':
+                        rnd = random.randint(1, 2)
+                        if rnd == 1:
+                            faction = 'Town'
+                        else:
+                            faction = 'Mafia'
+
+                bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to be aligned with '+faction+'.')
 
         # handle item receptions
         itemsends = [action for action in self.actionlist if action.actiontype == MafiaAction.SENDITEM and action.source not in blockset]
@@ -474,22 +492,11 @@ class MafiaBot:
                 else:
                     bot.msg(watch.source, str(watch.target)+' was not visited tonight.')
 
-        # handle corrupt bureaucrat
-        bureaucrats = [action for action in self.actionlist if action.actiontype == MafiaAction.CORRUPTBUREAUCRAT]
-        for bureaucrat in bureaucrats:
-            if bureaucrat.source in blockset:
-                bot.msg(bureaucrat.source, 'You were blocked tonight.')
-            else:
-                rolelist = []
-                for player in self.players.values():
-                    if not player.IsDead():
-                        if player.role is not None:
-                            rolestr = player.role.GetRoleName()
-                        else:
-                            rolestr = 'None'
-                        rolelist.append(rolestr)
-                random.shuffle(rolelist)
-                bot.msg(bureaucrat.source, 'The following roles were alive going into the night: '+', '.join(rolelist), max_messages=10)
+        # handle callback actions
+        callbacks = [action for action in self.actionlist if action.actiontype == MafiaAction.CALLBACK]
+        for callback in callbacks:
+            if callback.source not in blockset:
+                callback.modifiers['callback'](callback.source, bot, self)
 
         # handle kill actions
         nokills = True
@@ -523,6 +530,9 @@ class MafiaBot:
                 rolestr = player.role.GetRoleName()
             else:
                 rolestr = ''
+            # include cop sanities:
+            if rolestr == 'Cop':
+                rolestr += ' ('+player.role.sanity+')'
             retstr += '\x02' + str(player.name) + '\x02' + deadstr + ': ' + factionstr + ' ' + rolestr + '  '
         return retstr.rstrip()
 
