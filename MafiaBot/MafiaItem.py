@@ -3,6 +3,7 @@ class MafiaItem(object):
     GUN = 0
     SYRINGE = 1
     VEST = 2
+    CHECK = 3
 
     def __init__(self, name, receiveday=0):
         self.name = name
