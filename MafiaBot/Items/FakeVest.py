@@ -25,4 +25,4 @@ class FakeVest(MafiaItem):
         return False, None
 
     def BeginNightPhase(self, mb, player, bot):
-        return 'Vest: You have a bulletproof vest called '+self.name+' received on night '+str(self.receiveday)+'.'
+        return ''

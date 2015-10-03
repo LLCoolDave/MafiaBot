@@ -73,7 +73,7 @@ class MafiaPlayer:
                 if paramsplits[0] in self.items:
                     # check if the type is limited in use and has already been used tonight:
                     if self.items[paramsplits[0]].type in self.itemused:
-                        if self.itemused[self.items[paramsplits[0]]]:
+                        if self.itemused[self.items[paramsplits[0]].type]:
                             return 'You cannot use any more items of this type tonight.'
                     if len(paramsplits) > 1:
                         itemparam = paramsplits[1]
@@ -83,7 +83,7 @@ class MafiaPlayer:
                     if returnpair[0]:
                         # if it is a limited use item type, we mark it as used for the night
                         if self.items[paramsplits[0]].type in self.itemused:
-                            self.itemused[self.items[paramsplits[0]]] = True
+                            self.itemused[self.items[paramsplits[0]].type] = True
                         del self.items[paramsplits[0]]
                     return returnpair[1]
 
@@ -91,7 +91,7 @@ class MafiaPlayer:
             retstr = 'You have the following items:'
             for item in self.items.values():
                 if item.visible:
-                    retstr += ' a ' + item.GetBaseName()+' called '+item.name+' received on night '+str(item.receiveday)
+                    retstr += ' A ' + item.GetBaseName()+' called '+item.name+' received on night '+str(item.receiveday)+'.'
             return retstr
 
         else:
@@ -129,12 +129,16 @@ class MafiaPlayer:
         # reset limited uses for item types
         self.itemused = {MafiaItem.GUN: False}
         if self.role is not None:
-            nightactionstr += self.role.BeginNightPhase(mb, self, bot)
+            roleactionstr = self.role.BeginNightPhase(mb, self, bot)
+            if not roleactionstr == '':
+                nightactionstr += roleactionstr + ' '
         for item in self.items.values():
-            nightactionstr += item.BeginNightPhase(mb, self, bot)
+            itemactionstr = item.BeginNightPhase(mb, self, bot)
+            if not itemactionstr == '':
+                nightactionstr += itemactionstr + ' '
         self.UpdateActions()
         if not nightactionstr == '':
-            bot.msg(self.name, 'You have to take the following night actions. Use !pass to skip on remaining night actions. '+nightactionstr, max_messages=10)
+            bot.msg(self.name, 'You have to take the following night actions. Use !pass to skip on remaining night actions. '+nightactionstr.rstrip(), max_messages=10)
 
     def Kill(self, mb, bot, checkprotection):
         if checkprotection:

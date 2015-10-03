@@ -34,7 +34,7 @@ class Vigilante(MafiaRole):
                                 ret = 'You will shoot '+str(target)+' tonight.'
                                 self.limiteduses -= 1
                                 if self.limiteduses > -1:
-                                    ret += 'You have '+str(self.limiteduses)+' bullets remaining.'
+                                    ret += ' You have '+str(self.limiteduses)+' bullets remaining.'
                                 return ret
                     return 'Cannot find player '+param
 

@@ -12,6 +12,7 @@ from Sleepwalker import Sleepwalker
 from Oracle import Oracle
 from CorruptBureaucrat import CorruptBureaucrat
 from Bulletproof import Bulletproof
+from Gunsmith import Gunsmith
 
 Roles = {'goon': Goon,
          'civilian': Civilian, 'vt': Civilian, 'townie': Civilian,
@@ -26,4 +27,5 @@ Roles = {'goon': Goon,
          'sleepwalker': Sleepwalker,
          'oracle': Oracle,
          'corruptbureaucrat': CorruptBureaucrat, 'corrupt bureaucrat': CorruptBureaucrat, 'bureaucrat': CorruptBureaucrat,
-         'bulletproof': Bulletproof}
+         'bulletproof': Bulletproof,
+         'gun smith': Gunsmith, 'gunsmith': Gunsmith}

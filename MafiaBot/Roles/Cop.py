@@ -41,7 +41,7 @@ class Cop(MafiaRole):
                                 ret = 'You investigate '+str(target)+' tonight.'
                                 self.limiteduses -= 1
                                 if self.limiteduses > -1:
-                                    ret += 'You have '+str(self.limiteduses)+' checks remaining.'
+                                    ret += ' You have '+str(self.limiteduses)+' checks remaining.'
                                 return ret
                     return 'Cannot find player '+param
 

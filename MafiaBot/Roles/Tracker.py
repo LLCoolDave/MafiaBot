@@ -34,7 +34,7 @@ class Tracker(MafiaRole):
                                 ret = 'You track '+str(target)+' tonight.'
                                 self.limiteduses -= 1
                                 if self.limiteduses > -1:
-                                    ret += 'You have '+str(self.limiteduses)+' tracks remaining.'
+                                    ret += ' You have '+str(self.limiteduses)+' tracks remaining.'
                                 return ret
                     return 'Cannot find player '+param
 

@@ -38,7 +38,7 @@ class Oracle(MafiaRole):
                                 ret = 'You pick '+str(target)+' tonight.'
                                 self.limiteduses -= 1
                                 if self.limiteduses > -1:
-                                    ret += 'You have '+str(self.limiteduses)+' picks remaining.'
+                                    ret += ' You have '+str(self.limiteduses)+' picks remaining.'
                                 return ret
                     return 'Cannot find player '+param
 

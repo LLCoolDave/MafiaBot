@@ -43,7 +43,7 @@ class Prostitute(MafiaRole):
                                 self.limiteduses -= 1
                                 self.lastpick = (target, mb.daycount)
                                 if self.limiteduses > -1:
-                                    ret += 'You have '+str(self.limiteduses)+' blocks remaining.'
+                                    ret += ' You have '+str(self.limiteduses)+' blocks remaining.'
                                 return ret
                     return 'Cannot find player '+param
 

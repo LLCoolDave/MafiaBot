@@ -257,19 +257,26 @@ class MafiaBot:
 
     def HandleVote(self, player, param, bot):
         if not self[player].IsDead():
-            if Identifier(param) in self.players or param == 'NoLynch':
-                self.votes[player] = param
-                # check for majority
-                cnt = 0
-                for vote in self.votes.values():
-                    if vote.lower() == param.lower():
-                        cnt += 1
-                if cnt > len(self.votes)/2:
-                    # majority
-                    self.Lynch(Identifier(param), bot)
-                else:
-                    # print current votes
-                    self.PrintVotes(bot)
+            # check if vote target is a player
+            if Identifier(param) in self.players:
+                # if he is alive we continue, otherwise we return
+                if self.players[Identifier(param)].IsDead():
+                    return
+            # the only non player that is valid is NoLynch, otherwise we return
+            elif not param == 'NoLynch':
+                return
+            self.votes[player] = param
+            # check for majority
+            cnt = 0
+            for vote in self.votes.values():
+                if vote.lower() == param.lower():
+                    cnt += 1
+            if cnt > len(self.votes)/2:
+                # majority
+                self.Lynch(Identifier(param), bot)
+            else:
+                # print current votes
+                self.PrintVotes(bot)
 
     def PrintVotes(self, bot):
         msg = 'Current Votes -  '

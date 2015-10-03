@@ -34,7 +34,7 @@ class Watcher(MafiaRole):
                                 ret = 'You watch '+str(target)+' tonight.'
                                 self.limiteduses -= 1
                                 if self.limiteduses > -1:
-                                    ret += 'You have '+str(self.limiteduses)+' uses remaining.'
+                                    ret += ' You have '+str(self.limiteduses)+' uses remaining.'
                                 return ret
                     return 'Cannot find player '+param
 

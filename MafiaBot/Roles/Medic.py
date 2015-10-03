@@ -43,7 +43,7 @@ class Medic(MafiaRole):
                                 self.limiteduses -= 1
                                 self.lastpick = (target, mb.daycount)
                                 if self.limiteduses > -1:
-                                    ret += 'You have '+str(self.limiteduses)+' protections remaining.'
+                                    ret += ' You have '+str(self.limiteduses)+' protections remaining.'
                                 return ret
                     return 'Cannot find player '+param
 

@@ -120,11 +120,11 @@ def Main():
         bulletproof = bulletproofs[0]
     else:
         bulletproof = None
-    corruptbureaucrats = [player for player in playerlist if isinstance(mb.players[player].role, Roles['corruptbureaucrat'])]
-    if corruptbureaucrats:
-        corruptbureaucrat = corruptbureaucrats[0]
+    gunsmiths = [player for player in playerlist if isinstance(mb.players[player].role, Roles['gunsmith'])]
+    if gunsmiths:
+        gunsmith = gunsmiths[0]
     else:
-        corruptbureaucrat = None
+        gunsmith = None
     vigilantes = [player for player in playerlist if isinstance(mb.players[player].role, Roles['vigilante'])]
     if vigilantes:
         vigilante = vigilantes[0]
@@ -143,8 +143,9 @@ def Main():
         # lynch player i
         PassDay(playerlist[i])
         # LogOff()
-        SendCommand('item', bulletproof, bulletproof, 'vest')
-        SendPlayerCommand('check', corruptbureaucrat, corruptbureaucrat, '')
+        SendPlayerCommand('items', bulletproof, bulletproof, '')
+        SendPlayerCommand('send', gunsmith, gunsmith, bulletproof)
+        SendPlayerCommand('use', bulletproof, bulletproof, 'gun1 '+str(cop))
         SendPlayerCommand('pass', pros, pros, cop)
         SendPlayerCommand('pass', medic, medic, playerlist[0])
         SendPlayerCommand('pass', cop, cop, playerlist[0])

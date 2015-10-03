@@ -59,7 +59,7 @@ def AdminOnly(bot, trigger):
             bot.say(response, max_messages=10)
 
 
-@module.commands('shoot', 'check', 'protect', 'block', 'use', 'pass', 'visit', 'track', 'watch', 'pick', 'items')
+@module.commands('shoot', 'check', 'protect', 'block', 'use', 'pass', 'visit', 'track', 'watch', 'pick', 'items', 'send')
 @module.require_privmsg()
 def PlayerAction(bot, trigger):
     response = bot.memory['MafiaBotDir'].HandlePlayerCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)

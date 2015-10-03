@@ -18,8 +18,8 @@ def Test(playercount):
     rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon', dict()),
                 (MafiaPlayer.FACTION_MAFIA, 'prostitute', dict()),
                 (MafiaPlayer.FACTION_TOWN, 'cop', {'limiteduses': 1}),
-                (MafiaPlayer.FACTION_TOWN, 'vigilante', dict()),
-                (MafiaPlayer.FACTION_TOWN, 'corruptbureaucrat', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'bulletproof', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'gunsmith', {'limiteduses': 1}),
                 (MafiaPlayer.FACTION_TOWN, 'tracker', dict()),
                 (MafiaPlayer.FACTION_TOWN, 'watcher', dict())]
     return rolelist

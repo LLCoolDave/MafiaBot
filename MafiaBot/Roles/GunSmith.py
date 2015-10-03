@@ -3,38 +3,38 @@ from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 
 
-class Sleepwalker(MafiaRole):
+class Gunsmith(MafiaRole):
 
     def GetRolePM(self):
-        ret = 'You are a Sleepwalker. You have to visit another player at night. This action does nothing.'
+        ret = 'You are a Gunsmith. You may give another player a gun during the night.'
         if self.limiteduses > -1:
             ret += ' You may only use this ability '+str(self.limiteduses)+' times.'
         return ret
 
     def GetRoleName(self):
-        return 'Sleepwalker'
+        return 'Gunsmith'
 
     @staticmethod
     def GetRoleDescription():
-        return 'Sleepwalkers compulsorily visit other players at night. That action accomplishes nothing.'
+        return 'Gunsmiths hand out guns to other players at night. These guns can then be used to carry out night kills.'
 
     def HandleCommand(self, command, param, bot, mb, player):
         if self.requiredaction:
-            if command == 'visit':
+            if command == 'send':
                 if not self.limiteduses == 0:
                     target = Identifier(param)
                     if target in mb.players:
                         if not mb.players[target].IsDead():
                             if mb.players[target] is player:
-                                return 'You cannot visit yourself!'
+                                return 'You cannot give a gun to yourself!'
                             else:
-                                mb.actionlist.append(MafiaAction(MafiaAction.VISIT, player.name, target, True))
+                                mb.actionlist.append(MafiaAction(MafiaAction.SENDITEM, player.name, target, True, {'item': 'gun'}))
                                 self.requiredaction = False
                                 player.UpdateActions()
-                                ret = 'You visit '+str(target)+' tonight.'
+                                ret = 'You send a gun to '+str(target)+' tonight.'
                                 self.limiteduses -= 1
                                 if self.limiteduses > -1:
-                                    ret += ' You have '+str(self.limiteduses)+' visits remaining.'
+                                    ret += ' You have '+str(self.limiteduses)+' guns remaining.'
                                 return ret
                     return 'Cannot find player '+param
 
@@ -43,10 +43,9 @@ class Sleepwalker(MafiaRole):
     def BeginNightPhase(self, mb, player, bot):
         if not self.limiteduses == 0:
             self.requiredaction = True
-            self.mandatoryaction = True
-            ret = 'Sleepwalker: [Mandatory!] You have to visit another player tonight. Use !visit <player> to visit that player.'
+            ret = 'Gunsmith: You may send another player a gun tonight. Use !send <player> to give a gun to that player.'
             if self.limiteduses > -1:
-                ret += ' You have '+str(self.limiteduses)+' visits remaining.'
+                ret += ' You have '+str(self.limiteduses)+' guns remaining.'
             return ret
         else:
             return ''
