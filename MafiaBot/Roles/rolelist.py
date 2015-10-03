@@ -18,6 +18,7 @@ from Alien import Alien
 from Nurse import Nurse
 from Santa import Santa
 from Fabricator import Fabricator
+from Inventor import Inventor
 
 Roles = {'goon': Goon,
          'civilian': Civilian, 'vt': Civilian, 'townie': Civilian,
@@ -38,4 +39,5 @@ Roles = {'goon': Goon,
          'alien': Alien,
          'nurse': Nurse,
          'santa': Santa,
-         'fabricator': Fabricator}
+         'fabricator': Fabricator,
+         'inventor': Inventor}
