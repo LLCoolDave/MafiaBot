@@ -30,6 +30,10 @@ class MafiaPlayer:
             ret += 'You are aligned with the Town. You win if only people aligned with town are left alive. '
         elif self.faction == self.FACTION_MAFIA:
             ret += 'You are aligned with the Mafia. You win if the Mafia are the only players left alive or this cannot be prevented anymore. Join ' + self.mafiachannel + ' to meet your fellow mafia partners. '
+        elif self.faction == self.FACTION_MAFIATRAITOR:
+            ret += 'You are aligned with the Mafia. You win if the Mafia are the only players left alive or this cannot be prevented anymore. '
+        elif self.faction == self.FACTION_THIRDPARTY:
+            ret += 'You are a Third Party. Your win condition depends on your role. '
         if self.role is not None:
             ret += self.role.GetRolePM()
         return ret

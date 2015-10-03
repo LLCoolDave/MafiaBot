@@ -19,6 +19,7 @@ from Nurse import Nurse
 from Santa import Santa
 from Fabricator import Fabricator
 from Inventor import Inventor
+from Traitor import Traitor
 
 Roles = {'goon': Goon,
          'civilian': Civilian, 'vt': Civilian, 'townie': Civilian,
@@ -40,4 +41,5 @@ Roles = {'goon': Goon,
          'nurse': Nurse,
          'santa': Santa,
          'fabricator': Fabricator,
-         'inventor': Inventor}
+         'inventor': Inventor,
+         'traitor': Traitor}

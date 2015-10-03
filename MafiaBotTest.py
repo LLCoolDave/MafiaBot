@@ -84,7 +84,7 @@ def BreakPoint():
 
 def Main():
     # all players join
-    LogOff()
+    # LogOff()
     JoinAndStart()
     # get mafia
     scums = [player for player in playerlist if mb.players[player].faction == MafiaPlayer.FACTION_MAFIA]
@@ -146,19 +146,15 @@ def Main():
     i = 0
     while mb.active:
         # lynch player i
-        PassDay()
-        # LogOff()
-        SendPlayerCommand('items', bulletproof, bulletproof, '')
+        PassDay(playerlist[i])
+        LogOff()
         SendPlayerCommand('pass', gunsmith, gunsmith, bulletproof)
-        SendPlayerCommand('pass', bulletproof, bulletproof, 'gun1 '+str(cop))
         SendPlayerCommand('pass', pros, pros, cop)
         SendPlayerCommand('pass', medic, medic, playerlist[0])
         SendPlayerCommand('pass', cop, cop, playerlist[0])
         SendPlayerCommand('pass', tracker, tracker, cop)
         SendPlayerCommand('pass', watcher, watcher, cop)
         SendPlayerCommand('pass', vigilante, vigilante, cop)
-        SendPlayerCommand('probes', alien, alien, '')
-        SendPlayerCommand('visit', alien, alien, playerlist[i])
         SendCommand('nokill', mafiachannel, scum, playerlist[0])
         SendCommand('nokill', mafiachannel, pros, playerlist[0])
         LogOn()

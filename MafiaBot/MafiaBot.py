@@ -378,10 +378,10 @@ class MafiaBot:
         for player in self.players.keys():
             self[player].dead = False
             self.votes[player] = self.NOVOTE
-            if self[player].role is not None:
-                self[player].role.StartGame(bot, self[player], self)
             # send role PM to all of the players
             bot.msg(player, self[player].GetRolePM())
+            if self[player].role is not None:
+                self[player].role.StartGame(bot, self[player], self)
         bot.msg(self.mainchannel, 'The game has started!')
         if self.setup.GetDaystart():
             bot.msg(self.mainchannel, 'It is now day 0.')
