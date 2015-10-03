@@ -1,6 +1,7 @@
 from MafiaItem import MafiaItem
 from Items.itemlist import Items
 
+
 class MafiaPlayer:
 
     FACTION_TOWN = 0
@@ -70,21 +71,21 @@ class MafiaPlayer:
         elif command == 'use':
             if param is not None:
                 paramsplits = param.split(' ', 1)
-                if paramsplits[0] in self.items:
+                if paramsplits[0].lower() in self.items:
                     # check if the type is limited in use and has already been used tonight:
-                    if self.items[paramsplits[0]].type in self.itemused:
-                        if self.itemused[self.items[paramsplits[0]].type]:
+                    if self.items[paramsplits[0].lower()].type in self.itemused:
+                        if self.itemused[self.items[paramsplits[0].lower()].type]:
                             return 'You cannot use any more items of this type tonight.'
                     if len(paramsplits) > 1:
                         itemparam = paramsplits[1]
                     else:
                         itemparam = ''
-                    returnpair = self.items[paramsplits[0]].HandleCommand(itemparam, self, bot, mb)
+                    returnpair = self.items[paramsplits[0].lower()].HandleCommand(itemparam, self, bot, mb)
                     if returnpair[0]:
                         # if it is a limited use item type, we mark it as used for the night
-                        if self.items[paramsplits[0]].type in self.itemused:
-                            self.itemused[self.items[paramsplits[0]].type] = True
-                        del self.items[paramsplits[0]]
+                        if self.items[paramsplits[0].lower()].type in self.itemused:
+                            self.itemused[self.items[paramsplits[0].lower()].type] = True
+                        del self.items[paramsplits[0].lower()]
                     return returnpair[1]
 
         elif command == 'items':
@@ -110,7 +111,9 @@ class MafiaPlayer:
                 i += 1
             itemname = basename + str(i)
             self.items[itemname] = Items[item](itemname, mafiabot.daycount)
-            bot.msg(self.name, self.items[itemname].ReceiveItemPM())
+            itempm = self.items[itemname].ReceiveItemPM()
+            if not itempm == '':
+                bot.msg(self.name, itempm)
 
     def GetFaction(self):
         if self.faction == self.FACTION_MAFIA:
@@ -185,3 +188,10 @@ class MafiaPlayer:
         if self.role is not None:
             nkpower += self.role.NightKillPower()
         return nkpower
+
+    def IsProbed(self):
+        probed = False
+        for item in self.items.values():
+            if item.type == MafiaItem.PROBE:
+                probed = True
+        return probed

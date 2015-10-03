@@ -4,6 +4,8 @@ class MafiaItem(object):
     SYRINGE = 1
     VEST = 2
     CHECK = 3
+    BREAD = 4
+    PROBE = 5
 
     def __init__(self, name, receiveday=0):
         self.name = name

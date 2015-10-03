@@ -8,6 +8,7 @@ class FakeBackgroundCheck(MafiaItem):
     def __init__(self, name, receiveday=0):
         super(FakeBackgroundCheck, self).__init__(name, receiveday)
         self.type = MafiaItem.CHECK
+        self.fake = True
 
     def ReceiveItemPM(self):
         return 'You have received a background check! It is called '+self.name+'. You may use it during future nights to investigate another player\'s faction with the command !use '+self.name+' <target>.'

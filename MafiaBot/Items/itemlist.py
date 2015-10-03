@@ -6,6 +6,8 @@ from Syringe import Syringe
 from FakeSyringe import FakeSyringe
 from BackgroundCheck import BackgroundCheck
 from FakeBackgroundCheck import FakeBackgroundCheck
+from FakeBread import FakeBread
+from Probe import Probe
 
 Items = {'gun': Gun,
          'fakegun': FakeGun, 'fake gun': FakeGun,
@@ -14,4 +16,6 @@ Items = {'gun': Gun,
          'syringe': Syringe,
          'fakesyringe': FakeSyringe, 'fake syringe': FakeSyringe,
          'backgroundcheck': BackgroundCheck, 'background check': BackgroundCheck, 'check': BackgroundCheck,
-         'fakebackgroundcheck': FakeBackgroundCheck, 'fake background check': FakeBackgroundCheck, 'fakecheck': FakeBackgroundCheck, 'fake check': FakeBackgroundCheck}
+         'fakebackgroundcheck': FakeBackgroundCheck, 'fake background check': FakeBackgroundCheck, 'fakecheck': FakeBackgroundCheck, 'fake check': FakeBackgroundCheck,
+         'fakebread': FakeBread, 'fake bread': FakeBread,
+         'probe': Probe}
