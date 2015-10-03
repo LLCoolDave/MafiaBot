@@ -148,6 +148,9 @@ class MafiaPlayer:
             bot.msg(self.name, 'You have to take the following night actions. Use !pass to skip on remaining night actions. '+nightactionstr.rstrip(), max_messages=10)
 
     def Kill(self, mb, bot, checkprotection):
+        # only do something if we aren't already dead anyway
+        if self.dead:
+            return False, ''
         if checkprotection:
             # check all items for BP vest
             bpfound = False
