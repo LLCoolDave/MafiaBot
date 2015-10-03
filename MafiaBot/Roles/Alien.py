@@ -18,7 +18,9 @@ class Alien(MafiaRole):
 
     def HandleCommand(self, command, param, bot, mb, player):
         if command == 'probes':
-            pass
+            # get all other probed players
+            probed = [str(pl) for pl in mb.players if (mb.players[pl].IsProbed() and not mb.players[pl].IsDead() and mb.players[pl] is not player)]
+            return 'The probed players are: '+', '.join(probed)
         elif self.requiredaction:
             if command == 'visit':
                 if not self.limiteduses == 0:
