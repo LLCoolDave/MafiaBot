@@ -351,7 +351,7 @@ class MafiaBot:
 
         elif specialwin:
             self.active = False
-            self.players[specialwinner].SpecialWin(self, bot)
+            self.players[specialwinner].SpecialWin(specialwinner, self, bot)
 
         elif mafiawin:
             self.active = False
@@ -361,7 +361,7 @@ class MafiaBot:
             bot.msg(self.mainchannel, 'Mafia wins this game! Congratulations to '+playerstr, max_messages=10)
             bot.msg(self.mainchannel, 'The roles this game were - '+self.GetRoleList(), max_messages=10)
 
-        return mafiawin or townwin
+        return mafiawin or townwin or specialwin
 
     def StartGame(self, bot):
         # check if the right number of players are in the game

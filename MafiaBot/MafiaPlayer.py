@@ -175,10 +175,13 @@ class MafiaPlayer:
         return True, flipmsg
 
     def CheckSpecialWinCondition(self, mb):
-        return False
+        if self.role is not None:
+            return self.role.CheckSpecialWinCondition(mb)
+        else:
+            return False
 
-    def SpecialWin(self, mb, bot):
-        pass
+    def SpecialWin(self, winner, mb, bot):
+        self.role.SpecialWin(winner, mb, bot)
 
     def NightKillPower(self):
         nkpower = 0

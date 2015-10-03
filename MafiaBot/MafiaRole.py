@@ -36,3 +36,9 @@ class MafiaRole(object):
 
     def StartGame(self, bot, player, mafiabot):
         pass
+
+    def CheckSpecialWinCondition(self, mb):
+        return False
+
+    def SpecialWin(self, winner, mb, bot):
+        pass
