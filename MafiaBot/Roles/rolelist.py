@@ -15,6 +15,9 @@ from Bulletproof import Bulletproof
 from Gunsmith import Gunsmith
 from Armorsmith import Armorsmith
 from Alien import Alien
+from Nurse import Nurse
+from Santa import Santa
+from Fabricator import Fabricator
 
 Roles = {'goon': Goon,
          'civilian': Civilian, 'vt': Civilian, 'townie': Civilian,
@@ -32,4 +35,7 @@ Roles = {'goon': Goon,
          'bulletproof': Bulletproof,
          'gun smith': Gunsmith, 'gunsmith': Gunsmith,
          'armor smith': Armorsmith, 'armorsmith': Armorsmith,
-         'alien': Alien}
+         'alien': Alien,
+         'nurse': Nurse,
+         'santa': Santa,
+         'fabricator': Fabricator}

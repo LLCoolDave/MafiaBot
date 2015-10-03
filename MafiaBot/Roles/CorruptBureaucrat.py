@@ -50,6 +50,7 @@ class CorruptBureaucrat(MafiaRole):
                     rolestr = player.role.GetRoleName()
                 else:
                     rolestr = 'None'
-                rolelist.append(rolestr)
+                if not (rolestr == 'Goon' or rolestr == 'Civilian' or rolestr == 'Traitor' or rolestr == 'None'):
+                    rolelist.append(rolestr)
         random.shuffle(rolelist)
         bot.msg(source, 'The following roles were alive going into the night: '+', '.join(rolelist), max_messages=10)
