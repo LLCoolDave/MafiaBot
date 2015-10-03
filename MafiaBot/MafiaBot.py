@@ -502,8 +502,11 @@ class MafiaBot:
         # handle callback actions
         callbacks = [action for action in self.actionlist if action.actiontype == MafiaAction.CALLBACK]
         for callback in callbacks:
-            if callback.source not in blockset:
-                callback.modifiers['callback'](callback.source, bot, self)
+            if callback.source in blockset:
+                blocked = True
+            else:
+                blocked = False
+            callback.modifiers['callback'](callback.source, bot, self, blocked)
 
         # handle kill actions
         nokills = True

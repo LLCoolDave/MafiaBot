@@ -6,7 +6,7 @@ from MafiaBot.MafiaAction import MafiaAction
 class RoleCop(MafiaRole):
 
     def GetRolePM(self):
-        ret = 'You are a Role Cop. You may check the Role of another player at night.'
+        ret = 'You are a Role Cop. You may check the role of another player at night.'
         if self.limiteduses > -1:
             ret += ' You may only use this ability '+str(self.limiteduses)+' times.'
         return ret

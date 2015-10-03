@@ -42,15 +42,16 @@ class CorruptBureaucrat(MafiaRole):
         else:
             return ''
 
-    def ReceiveRoleList(self, source, bot, mafiabot):
-        rolelist = []
-        for player in mafiabot.players.values():
-            if not player.IsDead():
-                if player.role is not None:
-                    rolestr = player.role.GetRoleName()
-                else:
-                    rolestr = 'None'
-                if not (rolestr == 'Goon' or rolestr == 'Civilian' or rolestr == 'Traitor' or rolestr == 'None'):
-                    rolelist.append(rolestr)
-        random.shuffle(rolelist)
-        bot.msg(source, 'The following roles were alive going into the night: '+', '.join(rolelist), max_messages=10)
+    def ReceiveRoleList(self, source, bot, mafiabot, blocked):
+        if not blocked:
+            rolelist = []
+            for player in mafiabot.players.values():
+                if not player.IsDead():
+                    if player.role is not None:
+                        rolestr = player.role.GetRoleName()
+                    else:
+                        rolestr = 'None'
+                    if not (rolestr == 'Goon' or rolestr == 'Civilian' or rolestr == 'Traitor' or rolestr == 'None'):
+                        rolelist.append(rolestr)
+            random.shuffle(rolelist)
+            bot.msg(source, 'The following roles were alive going into the night: '+', '.join(rolelist), max_messages=10)
