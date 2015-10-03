@@ -5,6 +5,7 @@ from sopel.tools import Identifier
 from MafiaAction import MafiaAction
 from MafiaRole import MafiaRole
 from Roles.rolelist import Roles
+from Items.itemlist import Items
 from MafiaSetup import MafiaSetup
 
 
@@ -195,6 +196,12 @@ class MafiaBot:
             else:
                 return 'I do not know the role '+param
 
+        elif command == 'item':
+            if param.lower() in Items:
+                return Items[param.lower()].ItemDescription()
+            else:
+                return 'I do not know the item '+param
+
         elif command == 'setup':
             if param == 'reset':
                 self.setup = MafiaSetup()
@@ -342,7 +349,7 @@ class MafiaBot:
         elif mafiawin:
             self.active = False
             # get mafia players and prepare win message
-            mafia = [str(self.players[player].name) for player in self.players if self.players[player].faction == MafiaPlayer.FACTION_MAFIA]
+            mafia = [str(self.players[player].name) for player in self.players if (self.players[player].faction == MafiaPlayer.FACTION_MAFIA or self.players[player].faction == MafiaPlayer.FACTION_MAFIATRAITOR)]
             playerstr = ', '.join(mafia)
             bot.msg(self.mainchannel, 'Mafia wins this game! Congratulations to '+playerstr, max_messages=10)
             bot.msg(self.mainchannel, 'The roles this game were - '+self.GetRoleList(), max_messages=10)
@@ -364,6 +371,8 @@ class MafiaBot:
         for player in self.players.keys():
             self[player].dead = False
             self.votes[player] = self.NOVOTE
+            if self[player].role is not None:
+                self[player].role.StartGame(bot, self[player], self)
             # send role PM to all of the players
             bot.msg(player, self[player].GetRolePM())
         bot.msg(self.mainchannel, 'The game has started!')
@@ -384,6 +393,8 @@ class MafiaBot:
             if player.faction == MafiaPlayer.FACTION_MAFIA:
                 player.mafiachannel = self.mafiachannels[0]
                 player.preventtownvictory = True
+            elif player.faction == MafiaPlayer.FACTION_THIRDPARTY:
+                player.preventtownvictory = player.role.preventtownvictory
             # instantiate role
             if rolelist[i][1] is not None:
                 # create role
@@ -395,6 +406,9 @@ class MafiaBot:
             i += 1
 
     def HandleActionList(self, bot):
+        # shuffle action list so there's no information to be gathered from multiple events happening in the same night
+        random.shuffle(self.actionlist)
+
         # handle roleblocks
         blockset = set([action.target for action in self.actionlist if action.actiontype == MafiaAction.BLOCK])
 
@@ -415,6 +429,11 @@ class MafiaBot:
                 # ToDo: check sanity here
                 bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to be aligned with '+self.players[check.target].GetFaction()+'.')
 
+        # handle item receptions
+        itemsends = [action for action in self.actionlist if action.actiontype == MafiaAction.SENDITEM and action.source not in blockset]
+        for send in itemsends:
+            self.players[send.target].ReceiveItem(send.modifiers['item'], bot, self)
+
         # handle role investigations
         rolecopchecks = [action for action in self.actionlist if action.actiontype == MafiaAction.CHECKROLE]
         for check in rolecopchecks:
@@ -422,7 +441,12 @@ class MafiaBot:
                 bot.msg(check.source, 'You were blocked tonight.')
             else:
                 if self.players[check.target].role is not None:
-                    bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to be a '+self.players[check.target].role.GetRoleName()+'.')
+                    rolename = self.players[check.target].role.GetRoleName()
+                    if rolename == 'Goon' or rolename == 'Civilian':
+                        rolename = 'Vanilla'
+                    else:
+                        rolename = 'a '+rolename
+                    bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to be '+rolename+'.')
                 else:
                     bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to not have a role at all. Strange.')
 
@@ -494,12 +518,7 @@ class MafiaBot:
                 deadstr = ' (Dead)'
             else:
                 deadstr = ''
-            if player.faction == MafiaPlayer.FACTION_MAFIA:
-                factionstr = 'Mafia'
-            elif player.faction == MafiaPlayer.FACTION_TOWN:
-                factionstr = 'Town'
-            else:
-                factionstr = ''
+            factionstr = player.GetFaction()
             if player.role is not None:
                 rolestr = player.role.GetRoleName()
             else:

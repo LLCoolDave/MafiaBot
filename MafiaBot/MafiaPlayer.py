@@ -1,10 +1,12 @@
 from MafiaItem import MafiaItem
-
+from Items.itemlist import Items
 
 class MafiaPlayer:
 
     FACTION_TOWN = 0
     FACTION_MAFIA = 1
+    FACTION_MAFIATRAITOR = 2
+    FACTION_THIRDPARTY = 3
 
     def __init__(self, name):
         self.name = name
@@ -60,13 +62,24 @@ class MafiaPlayer:
             return None
 
         elif command == 'use':
-            paramsplits = param.split(' ', 1)
-            if paramsplits[0] in self.items:
-                if len(paramsplits) > 1:
-                    itemparam = paramsplits[1]
-                else:
-                    itemparam = ''
-                return self.items[paramsplits[0]].HandleCommand(itemparam, bot, mb)
+            if param is not None:
+                paramsplits = param.split(' ', 1)
+                if paramsplits[0] in self.items:
+                    if len(paramsplits) > 1:
+                        itemparam = paramsplits[1]
+                    else:
+                        itemparam = ''
+                    returnpair = self.items[paramsplits[0]].HandleCommand(itemparam, self, bot, mb)
+                    if returnpair[0]:
+                        del self.items[paramsplits[0]]
+                    return returnpair[1]
+
+        elif command == 'items':
+            retstr = 'You have the following items:'
+            for item in self.items.values():
+                if item.visible:
+                    retstr += ' a ' + item.GetBaseName()+' called '+item.name+' received on night '+str(item.receiveday)
+            return retstr
 
         else:
             if self.role is not None:
@@ -75,11 +88,26 @@ class MafiaPlayer:
 
         return None
 
+    def ReceiveItem(self, item, bot, mafiabot):
+        i = 1
+        if item in Items:
+            basename = Items[item].GetBaseName()
+            # find unique name
+            while basename+str(i) in self.items:
+                i += 1
+            itemname = basename + str(i)
+            self.items[itemname] = Items[item](itemname, mafiabot.daycount)
+            bot.msg(self.name, self.items[itemname].ReceiveItemPM())
+
     def GetFaction(self):
         if self.faction == self.FACTION_MAFIA:
             return 'Mafia'
         elif self.faction == self.FACTION_TOWN:
             return 'Town'
+        elif self.faction == self.FACTION_MAFIATRAITOR:
+            return 'Mafia'
+        elif self.faction == self.FACTION_THIRDPARTY:
+            return 'Third Party'
         else:
             return 'None'
 
@@ -99,7 +127,7 @@ class MafiaPlayer:
             bpfound = False
             bpname = ''
             for pair in self.items.items():
-                if pair[1].type == MafiaItem.VEST:
+                if pair[1].type == MafiaItem.VEST and not pair[1].fake:
                     bpname = pair[0]
                     bpfound = True
                     break
@@ -107,7 +135,7 @@ class MafiaPlayer:
                 # consume vest
                 del self.items[bpname]
                 # inform player of being hit
-                bot.msg(self.name, "Ouch! You have been hit, but your bulletproof vest protected you.")
+                bot.msg(self.name, "Ouch! You have been hit, but your bulletproof vest" + str(bpname) + " protected you.")
                 # exit
                 return False, ''
         self.dead = True

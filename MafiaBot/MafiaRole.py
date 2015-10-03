@@ -6,6 +6,7 @@ class MafiaRole(object):
     def __init__(self, settings=dict()):
         self.mandatoryaction = False
         self.requiredaction = False
+        self.preventtownvictory = False
         if 'limiteduses' in settings:
             self.limiteduses = int(settings['limiteduses'])
         else:
@@ -31,4 +32,7 @@ class MafiaRole(object):
         return 0
 
     def Kill(self, bot, mafiabot):
+        pass
+
+    def StartGame(self, bot, player, mafiabot):
         pass

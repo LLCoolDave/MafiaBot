@@ -9,6 +9,7 @@ class MafiaAction:
     WATCH = 6
     VISIT = 7
     CORRUPTBUREAUCRAT = 8
+    SENDITEM = 9
 
     def __init__(self, actiontype, source, target, visiting, modifiers=None):
         self.actiontype = actiontype

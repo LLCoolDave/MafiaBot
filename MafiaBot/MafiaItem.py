@@ -4,20 +4,27 @@ class MafiaItem(object):
     SYRINGE = 1
     VEST = 2
 
-    def __init__(self, name, type):
+    def __init__(self, name, receiveday=0):
         self.name = name
-        self.type = type
+        self.type = None
         self.requiredaction = False
         self.mandatoryaction = False
+        self.receiveday = receiveday
+        self.fake = False
+        self.visible = True
 
     def ReceiveItemPM(self):
+        return ''
+
+    @staticmethod
+    def GetBaseName():
         return ''
 
     def ItemDescription(self):
         return ''
 
-    def HandleCommand(self, param, bot, mb):
-        return None
+    def HandleCommand(self, param, player, bot, mb):
+        return False, None
 
     def BeginNightPhase(self, mb, player, bot):
         return ''
