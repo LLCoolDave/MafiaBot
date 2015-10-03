@@ -84,7 +84,7 @@ def BreakPoint():
 
 def Main():
     # all players join
-    # LogOff()
+    LogOff()
     JoinAndStart()
     # get mafia
     scums = [player for player in playerlist if mb.players[player].faction == MafiaPlayer.FACTION_MAFIA]
@@ -105,6 +105,11 @@ def Main():
         cop = cops[0]
     else:
         cop = None
+    paritycops = [player for player in playerlist if isinstance(mb.players[player].role, Roles['paritycop'])]
+    if paritycops:
+        paritycop = paritycops[0]
+    else:
+        paritycop = None
     trackers = [player for player in playerlist if isinstance(mb.players[player].role, Roles['tracker'])]
     if trackers:
         tracker = trackers[0]
@@ -155,6 +160,7 @@ def Main():
         SendPlayerCommand('pass', tracker, tracker, cop)
         SendPlayerCommand('pass', watcher, watcher, cop)
         SendPlayerCommand('pass', vigilante, vigilante, cop)
+        SendPlayerCommand('check', paritycop, paritycop, playerlist[6-i])
         SendCommand('nokill', mafiachannel, scum, playerlist[0])
         SendCommand('nokill', mafiachannel, pros, playerlist[0])
         LogOn()

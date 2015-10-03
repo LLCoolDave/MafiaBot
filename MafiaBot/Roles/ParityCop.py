@@ -57,7 +57,7 @@ class ParityCop(MafiaRole):
             return ret
         else:
             return ''
-        
+
     def Callback(self, source, bot, mafiabot, blocked):
         if blocked:
             bot.msg(source, 'You were blocked tonight.', max_messages=10)
