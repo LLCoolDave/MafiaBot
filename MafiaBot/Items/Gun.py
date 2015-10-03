@@ -16,7 +16,8 @@ class Gun(MafiaItem):
     def GetBaseName():
         return 'gun'
 
-    def ItemDescription(self):
+    @staticmethod
+    def ItemDescription():
         return 'Guns provide a night kill to their owner. They can be fire alongside other night actions, but at most one gun may be used by each player each night.'
 
     def HandleCommand(self, param, player, bot, mb):

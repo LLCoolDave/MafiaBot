@@ -16,7 +16,8 @@ class BulletproofVest(MafiaItem):
     def GetBaseName():
         return 'vest'
 
-    def ItemDescription(self):
+    @staticmethod
+    def ItemDescription():
         return 'Bulletproof vests protect their owners. They counteract one night kill and are then consumed. Their owner is informed when this happens.'
 
     def HandleCommand(self, param, player, bot, mb):

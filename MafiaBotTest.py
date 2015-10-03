@@ -62,8 +62,8 @@ def LogOn():
 def JoinAndStart():
     for player in playerlist:
         SendCommand('join', mainchannel, player, '')
-    SendCommand('setup', mainchannel, playerlist[0], 'load basic7')
-    SendCommand('setup', mainchannel, playerlist[0], 'reveal faction')
+    SendCommand('setup', mainchannel, playerlist[0], 'load test')
+    SendCommand('setup', mainchannel, playerlist[0], 'daystart')
     SendCommand('players', mainchannel, playerlist[0], '')
     #test votes command
     SendCommand('votes', mainchannel, playerlist[2], '')
@@ -76,11 +76,8 @@ def Vote(player, target='NoLynch'):
     SendCommand('vote', mainchannel, player, strtar)
 
 def PassDay(target='NoLynch'):
-    SendCommand('time', mainchannel, playerlist[0], '')
     for player in playerlist:
         Vote(player, target)
-        SendCommand('roles', mainchannel, player, '')
-        SendCommand('roles', deadchat, player, '')
 
 def BreakPoint():
     pass
@@ -108,6 +105,26 @@ def Main():
         cop = cops[0]
     else:
         cop = None
+    trackers = [player for player in playerlist if isinstance(mb.players[player].role, Roles['tracker'])]
+    if trackers:
+        tracker = trackers[0]
+    else:
+        tracker = None
+    watchers = [player for player in playerlist if isinstance(mb.players[player].role, Roles['watcher'])]
+    if watchers:
+        watcher = watchers[0]
+    else:
+        watcher = None
+    bulletproofs = [player for player in playerlist if isinstance(mb.players[player].role, Roles['bulletproof'])]
+    if bulletproofs:
+        bulletproof = bulletproofs[0]
+    else:
+        bulletproof = None
+    vigilantes = [player for player in playerlist if isinstance(mb.players[player].role, Roles['vigilante'])]
+    if vigilantes:
+        vigilante = vigilantes[0]
+    else:
+        vigilante = None
     if scums[0] in prostitutes:
         scum = scums[1]
     else:
@@ -120,10 +137,14 @@ def Main():
     while mb.active:
         # lynch player i
         PassDay(playerlist[i])
-        LogOff()
+        # LogOff()
+        SendCommand('item', bulletproof, bulletproof, 'vest')
         SendPlayerCommand('pass', pros, pros, cop)
         SendPlayerCommand('pass', medic, medic, playerlist[0])
         SendPlayerCommand('pass', cop, cop, playerlist[0])
+        SendPlayerCommand('pass', tracker, tracker, vigilante)
+        SendPlayerCommand('pass', watcher, watcher, cop)
+        SendPlayerCommand('shoot', vigilante, vigilante, bulletproof)
         SendCommand('nokill', mafiachannel, scum, playerlist[0])
         SendCommand('nokill', mafiachannel, pros, playerlist[0])
         LogOn()

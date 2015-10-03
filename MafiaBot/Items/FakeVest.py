@@ -17,7 +17,8 @@ class FakeVest(MafiaItem):
     def GetBaseName():
         return 'vest'
 
-    def ItemDescription(self):
+    @staticmethod
+    def ItemDescription():
         return 'Fake bulletproof vests pretend to protect their owners. In reality, they do nothing at all.'
 
     def HandleCommand(self, param, player, bot, mb):

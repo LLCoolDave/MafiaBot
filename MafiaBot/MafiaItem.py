@@ -20,7 +20,8 @@ class MafiaItem(object):
     def GetBaseName():
         return ''
 
-    def ItemDescription(self):
+    @staticmethod
+    def ItemDescription():
         return ''
 
     def HandleCommand(self, param, player, bot, mb):

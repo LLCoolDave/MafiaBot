@@ -468,7 +468,7 @@ class MafiaBot:
             if watch.source in blockset:
                 bot.msg(watch.source, 'You were blocked tonight.')
             else:
-                visits = [action.target for action in self.actionlist if (action.target == watch.target and action.visiting and (action.actiontype == MafiaAction.BLOCK or action.source not in blockset))]
+                visits = [action.source for action in self.actionlist if (action.target == watch.target and not action.source == watch.source and action.visiting and (action.actiontype == MafiaAction.BLOCK or action.source not in blockset))]
                 if visits:
                     bot.msg(watch.source, str(watch.target)+' was visited by the following players tonight: '+', '.join(visits))
                 else:

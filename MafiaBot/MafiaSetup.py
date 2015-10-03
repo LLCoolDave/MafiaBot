@@ -14,6 +14,17 @@ def Basic7(playercount):
     return rolelist
 
 
+def Test(playercount):
+    rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon', dict()),
+                (MafiaPlayer.FACTION_MAFIA, 'prostitute', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'cop', {'limiteduses': 1}),
+                (MafiaPlayer.FACTION_TOWN, 'vigilante', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'bulletproof', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'tracker', dict()),
+                (MafiaPlayer.FACTION_TOWN, 'watcher', dict())]
+    return rolelist
+
+
 def C9(playercount):
     rolelist = [(MafiaPlayer.FACTION_MAFIA, 'goon', dict()),
                 (MafiaPlayer.FACTION_MAFIA, 'goon', dict()),
@@ -40,7 +51,8 @@ class MafiaSetup(object):
 
     # template: 'shortname': ('setup name', required_players #None to use value from self.requiredplayers, 'Setup description', function(playercount) #returns rolelist)
     PREDEFINED = {'basic7': ('Basic 7', 7, '1 Mafia Goon, 1 Mafia Prostitute, 1 One-Shot Cop, 1 Medic, 3 Civilians', Basic7),
-                  'c9': ('C9', 7, 'http://wiki.mafiascum.net/index.php?title=C9', C9)}
+                  'c9': ('C9', 7, 'http://wiki.mafiascum.net/index.php?title=C9', C9),
+                  'test': ('Test', 7, 'Only for bot module test. Not intended for actual play.', Test)}
 
     def __init__(self):
         self.requiredplayers = 0

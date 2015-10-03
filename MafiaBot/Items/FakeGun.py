@@ -17,7 +17,8 @@ class FakeGun(MafiaItem):
     def GetBaseName():
         return 'gun'
 
-    def ItemDescription(self):
+    @staticmethod
+    def ItemDescription():
         return 'Fake guns disguise themselves as real guns. If they are fired during the night, they backfire and kill their owner instead.'
 
     def HandleCommand(self, param, player, bot, mb):

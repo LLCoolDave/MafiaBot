@@ -28,7 +28,7 @@ class Watcher(MafiaRole):
                             if mb.players[target] is player:
                                 return 'You cannot watch yourself!'
                             else:
-                                mb.actionlist.append(MafiaAction(MafiaAction.TRACK, player.name, target, True))
+                                mb.actionlist.append(MafiaAction(MafiaAction.WATCH, player.name, target, True))
                                 self.requiredaction = False
                                 player.UpdateActions()
                                 ret = 'You watch '+str(target)+' tonight.'

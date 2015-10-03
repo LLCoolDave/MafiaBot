@@ -135,7 +135,7 @@ class MafiaPlayer:
                 # consume vest
                 del self.items[bpname]
                 # inform player of being hit
-                bot.msg(self.name, "Ouch! You have been hit, but your bulletproof vest" + str(bpname) + " protected you.")
+                bot.msg(self.name, "Ouch! You have been hit, but your bulletproof vest " + str(bpname) + " protected you.")
                 # exit
                 return False, ''
         self.dead = True
