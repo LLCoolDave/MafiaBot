@@ -134,7 +134,7 @@ class MafiaPlayer:
     def BeginNightPhase(self, mb, bot):
         nightactionstr = ''
         # reset limited uses for item types
-        self.itemused = {MafiaItem.GUN: False}
+        self.itemused = {MafiaItem.GUN: False, MafiaItem.SYRINGE: False, MafiaItem.CHECK: False}
         if self.role is not None:
             roleactionstr = self.role.BeginNightPhase(mb, self, bot)
             if not roleactionstr == '':
