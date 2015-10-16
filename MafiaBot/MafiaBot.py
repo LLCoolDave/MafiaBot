@@ -431,7 +431,7 @@ class MafiaBot:
         # first build up people blocking from non town sources
         blockset = {action.target for action in preblockset if not action.modifiers['faction'] == MafiaPlayer.FACTION_TOWN}
         # then add blocks that are town sourced but not blocked
-        blockset += {action.target for action in preblockset if action.source not in blockset}
+        blockset = blockset.union({action.target for action in preblockset if action.source not in blockset})
 
         # handle protections
         protections = [action for action in self.actionlist if action.actiontype == MafiaAction.PROTECT and action.source not in blockset]
