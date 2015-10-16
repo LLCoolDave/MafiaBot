@@ -372,6 +372,7 @@ class MafiaBot:
         if requiredplayers > 0:
             if not len(self.players) == requiredplayers:
                 return 'This setup requires '+str(requiredplayers)+' players. There are currenty '+str(len(self.players))+' players signed up for the game.'
+        bot.msg(self.mainchannel, 'The game is starting!')
         self.active = True
         self.time = time.clock()
         self.votes = dict()
@@ -385,7 +386,6 @@ class MafiaBot:
             bot.msg(player, self[player].GetRolePM())
             if self[player].role is not None:
                 self[player].role.StartGame(bot, self[player], self)
-        bot.msg(self.mainchannel, 'The game has started!')
         if self.setup.GetDaystart():
             bot.msg(self.mainchannel, 'It is now day 0.')
         else:
@@ -422,7 +422,7 @@ class MafiaBot:
         # build log of night actions:
         nighthistory = ''
         for action in self.actionlist:
-            nighthistory += '\x02'+MafiaAction.Lookup(action.actiontype)+'\x02 by '+action.source+' on '+action.target+' '
+            nighthistory += '\x02'+MafiaAction.Lookup[action.actiontype]+'\x02 by '+action.source+' on '+action.target+' '
             if action.actiontype == MafiaAction.SENDITEM:
                 nighthistory += 'with '+action.modifiers['item']+' '
 
