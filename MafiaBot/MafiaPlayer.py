@@ -20,6 +20,7 @@ class MafiaPlayer:
         self.mandatoryaction = False
         self.preventtownvictory = False
         self.itemused = dict()
+        self.afk = False
 
     def IsDead(self):
         return self.dead
@@ -99,6 +100,16 @@ class MafiaPlayer:
                     retstr += ' A ' + item.GetBaseName()+' called '+item.name+' received on night '+str(item.receiveday)+'.'
             return retstr
 
+        elif command == 'afk':
+            if not self.afk and mb.phase == mb.NIGHTPHASE:
+                self.afk = True
+                return 'You are now marked as afk. The next day will not start until you are back. Use !back to return to the game.'
+
+        elif command == 'back':
+            if self.afk and mb.phase == mb.NIGHTPHASE:
+                self.afk = False
+                return 'You are no longer marked as afk.'
+
         else:
             if self.role is not None:
                 # forward to role to handle
@@ -132,6 +143,7 @@ class MafiaPlayer:
             return 'None'
 
     def BeginNightPhase(self, mb, bot):
+        self.afk = False
         nightactionstr = ''
         # reset limited uses for item types
         self.itemused = {MafiaItem.GUN: False, MafiaItem.SYRINGE: False, MafiaItem.CHECK: False}

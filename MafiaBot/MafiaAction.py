@@ -13,6 +13,18 @@ class MafiaAction:
     # for generic callbacks
     CALLBACK = 255
 
+    # String lookup table
+    Lookup = {KILL: 'Kill',
+              BLOCK: 'Roleblock',
+              PROTECT: 'Protect',
+              CHECKROLE: 'Rolecheck',
+              CHECKFACTION: 'Factioncheck',
+              TRACK: 'Track',
+              WATCH: 'Watch',
+              VISIT: 'Visit',
+              SENDITEM: 'Send item',
+              CALLBACK: 'Special'}
+
     def __init__(self, actiontype, source, target, visiting, modifiers=None):
         self.actiontype = actiontype
         self.source = source

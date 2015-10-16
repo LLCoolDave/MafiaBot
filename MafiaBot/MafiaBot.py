@@ -418,6 +418,13 @@ class MafiaBot:
         # shuffle action list so there's no information to be gathered from multiple events happening in the same night
         random.shuffle(self.actionlist)
 
+        # build log of night actions:
+        nighthistory = ''
+        for action in self.actionlist:
+            nighthistory += '\x02'+MafiaAction.Lookup(action.actiontype)+'\x02 by '+action.source+' on '+action.target+' '
+            if action.actiontype == MafiaAction.SENDITEM:
+                nighthistory += 'with '+action.modifiers['item']+' '
+
         # handle roleblocks
         blockset = set([action.target for action in self.actionlist if action.actiontype == MafiaAction.BLOCK])
 
@@ -529,6 +536,8 @@ class MafiaBot:
             bot.msg(self.mainchannel, 'Nobody has died tonight!', max_messages=10)
         # reset actionlist
         self.actionlist = []
+        # send history to deadchat
+        bot.msg(self.deadchat, nighthistory, max_messages=10)
 
     def GetRoleList(self):
         retstr = ''
@@ -577,7 +586,7 @@ class MafiaBot:
             requiredactions = False
             for player in self.players:
                 if not self.players[player].IsDead():
-                    if self.players[player].requiredaction:
+                    if self.players[player].requiredaction or self.players[player].afk:
                         requiredactions = True
             if self.factionkills > 0:
                 requiredactions = True
