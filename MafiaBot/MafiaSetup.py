@@ -187,7 +187,11 @@ class MafiaSetup(object):
             factionstr = 'Town'
         else:
             factionstr = ''
-        return factionstr+' '+role[1]+' '+str(role[2])
+        if role[2]:
+            settingsstr = ' '+str(role[2])
+        else:
+            settingsstr = ''
+        return factionstr+' '+Roles[role[1].lower()].GetRoleName()+settingsstr
 
     def LoadPredefinedSetup(self, params, mafiabot):
         if not params:
@@ -220,7 +224,7 @@ class MafiaSetup(object):
         retstr = 'This is '+closedstr+' '+daystartstr+' setup for '+str(self.requiredplayers)+' players. It features the following roles:'
         i = 0
         for role in self.rolelist:
-            retstr += ' '+str(i) + ': '+self._RoleToString(role)
+            retstr += ' \x02'+str(i) + '\x02: '+self._RoleToString(role)
             i += 1
         return retstr
 

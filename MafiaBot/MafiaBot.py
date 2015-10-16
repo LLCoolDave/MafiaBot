@@ -71,6 +71,7 @@ class MafiaBot:
         return None
 
     def HandleCommand(self, command, source, nick, param, bot):
+        param = param.rstrip()
         if command == 'abort':
             # leave active channels
             for chn in self.mafiachannels:
@@ -85,7 +86,8 @@ class MafiaBot:
             return None
 
         elif command == 'deadchat':
-            return "The deadchat is at "+self.deadchat
+            if self.active:
+                return "The deadchat is at "+self.deadchat
 
         elif command == 'join':
             if not self.active and nick not in self.players:

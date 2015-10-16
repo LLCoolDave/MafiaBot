@@ -7,6 +7,7 @@ class Traitor(MafiaRole):
     def GetRolePM(self):
         return 'You are a Traitor. You are secretly aligned with the Mafia, but even they don\'t know of your existence.'
 
+    @staticmethod
     def GetRoleName(self):
         return 'Traitor'
 

@@ -6,6 +6,7 @@ class Goon(MafiaRole):
     def GetRolePM(self):
         return 'You are a Goon. You have no special abilities outside of participating in the night chat.'
 
+    @staticmethod
     def GetRoleName(self):
         return 'Goon'
 

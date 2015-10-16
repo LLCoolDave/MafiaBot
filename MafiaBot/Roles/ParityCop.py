@@ -16,6 +16,7 @@ class ParityCop(MafiaRole):
             ret += ' You may only use this ability '+str(self.limiteduses)+' times.'
         return ret
 
+    @staticmethod
     def GetRoleName(self):
         return 'Parity Cop'
 
