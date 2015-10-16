@@ -48,6 +48,11 @@ def ChannelOnly(bot, trigger):
         bot.say(response, max_messages=10)
 
 
+@module.commands('help')
+def Help(bot, trigger):
+    bot.say('https://docs.google.com/document/d/1XhWJLpKSxM8BcRaTB980OPBcAAMBQfIrR15SmM6f7Ro', max_messages=10)
+
+
 @module.commands('abort')
 @module.require_admin()
 def AdminOnly(bot, trigger):
