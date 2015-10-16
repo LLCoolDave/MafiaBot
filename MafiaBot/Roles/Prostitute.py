@@ -16,7 +16,7 @@ class Prostitute(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Prostitute'
 
     @staticmethod

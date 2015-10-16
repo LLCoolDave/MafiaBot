@@ -16,7 +16,7 @@ class MafiaRole(object):
         return ''
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return ''
 
     @staticmethod

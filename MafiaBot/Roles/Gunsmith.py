@@ -12,7 +12,7 @@ class Gunsmith(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Gunsmith'
 
     @staticmethod

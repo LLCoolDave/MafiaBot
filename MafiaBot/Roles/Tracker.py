@@ -12,7 +12,7 @@ class Tracker(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Tracker'
 
     @staticmethod

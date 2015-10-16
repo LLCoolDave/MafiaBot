@@ -71,7 +71,8 @@ class MafiaBot:
         return None
 
     def HandleCommand(self, command, source, nick, param, bot):
-        param = str(param).rstrip()
+        if param is not None:
+            param = param.rstrip()
         if command == 'abort':
             # leave active channels
             for chn in self.mafiachannels:

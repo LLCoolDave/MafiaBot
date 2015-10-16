@@ -12,7 +12,7 @@ class Nurse(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Nurse'
 
     @staticmethod

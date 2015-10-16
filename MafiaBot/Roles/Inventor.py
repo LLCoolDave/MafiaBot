@@ -16,7 +16,7 @@ class Inventor(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Inventor'
 
     @staticmethod

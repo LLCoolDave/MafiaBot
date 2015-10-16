@@ -12,7 +12,7 @@ class Watcher(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Watcher'
 
     @staticmethod

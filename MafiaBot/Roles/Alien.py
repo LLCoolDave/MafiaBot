@@ -10,7 +10,7 @@ class Alien(MafiaRole):
         return 'You are an Alien. You may secretly probe other players during the night. Once you have probed all other remaining living players, you win the game. You may use !probes to see a list of probed players.'
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Alien'
 
     @staticmethod

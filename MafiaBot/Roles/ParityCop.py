@@ -17,7 +17,7 @@ class ParityCop(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Parity Cop'
 
     @staticmethod

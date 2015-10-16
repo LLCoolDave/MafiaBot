@@ -12,7 +12,7 @@ class CorruptBureaucrat(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Corrupt Bureaucrat'
 
     @staticmethod

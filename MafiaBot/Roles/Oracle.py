@@ -16,7 +16,7 @@ class Oracle(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Oracle'
 
     @staticmethod

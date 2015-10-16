@@ -8,7 +8,7 @@ class Bulletproof(MafiaRole):
         return 'You are a Bulletproof. You start the game with one bulletproof vest.'
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Bulletproof'
 
     @staticmethod

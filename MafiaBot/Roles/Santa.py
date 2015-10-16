@@ -13,7 +13,7 @@ class Santa(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Santa'
 
     @staticmethod

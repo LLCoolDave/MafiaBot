@@ -19,7 +19,7 @@ class Cop(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Cop'
 
     @staticmethod

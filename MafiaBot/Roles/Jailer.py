@@ -16,7 +16,7 @@ class Jailer(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Jailer'
 
     @staticmethod

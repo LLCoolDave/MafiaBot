@@ -12,7 +12,7 @@ class Sleepwalker(MafiaRole):
         return ret
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Sleepwalker'
 
     @staticmethod

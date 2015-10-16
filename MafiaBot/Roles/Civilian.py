@@ -7,7 +7,7 @@ class Civilian(MafiaRole):
         return 'You are a Civilian. You have no special abilities.'
 
     @staticmethod
-    def GetRoleName(self):
+    def GetRoleName():
         return 'Civilian'
 
     @staticmethod
