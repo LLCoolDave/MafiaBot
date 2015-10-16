@@ -37,7 +37,7 @@ class Jailer(MafiaRole):
                             if mb.players[target] is player or target == lastpick:
                                 return 'You cannot jail that player.'
                             else:
-                                mb.actionlist.append(MafiaAction(MafiaAction.BLOCK, player.name, target, True))
+                                mb.actionlist.append(MafiaAction(MafiaAction.BLOCK, player.name, target, True, {'faction': player.faction}))
                                 mb.actionlist.append(MafiaAction(MafiaAction.PROTECT, player.name, target, True))
                                 self.requiredaction = False
                                 player.UpdateActions()

@@ -37,7 +37,7 @@ class Prostitute(MafiaRole):
                             if mb.players[target] is player or target == lastpick:
                                 return 'You cannot block that player.'
                             else:
-                                mb.actionlist.append(MafiaAction(MafiaAction.BLOCK, player.name, target, True))
+                                mb.actionlist.append(MafiaAction(MafiaAction.BLOCK, player.name, target, True, {'faction': player.faction}))
                                 self.requiredaction = False
                                 player.UpdateActions()
                                 ret = 'You block '+str(target)+' tonight.'

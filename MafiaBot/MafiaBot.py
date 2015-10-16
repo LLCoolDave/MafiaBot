@@ -71,7 +71,7 @@ class MafiaBot:
         return None
 
     def HandleCommand(self, command, source, nick, param, bot):
-        param = param.rstrip()
+        param = str(param).rstrip()
         if command == 'abort':
             # leave active channels
             for chn in self.mafiachannels:
@@ -426,7 +426,11 @@ class MafiaBot:
                 nighthistory += 'with '+action.modifiers['item']+' '
 
         # handle roleblocks
-        blockset = set([action.target for action in self.actionlist if action.actiontype == MafiaAction.BLOCK])
+        preblockset = {action for action in self.actionlist if action.actiontype == MafiaAction.BLOCK}
+        # first build up people blocking from non town sources
+        blockset = {action.target for action in preblockset if not action.modifiers['faction'] == MafiaPlayer.FACTION_TOWN}
+        # then add blocks that are town sourced but not blocked
+        blockset += {action.target for action in preblockset if action.source not in blockset}
 
         # handle protections
         protections = [action for action in self.actionlist if action.actiontype == MafiaAction.PROTECT and action.source not in blockset]
