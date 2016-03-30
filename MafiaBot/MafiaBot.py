@@ -105,6 +105,8 @@ class MafiaBot:
 
         elif command == 'join':
             if not self.active and not self._isPlayer(nick):
+                if Identifier(nick) == 'NoLynch':
+                    return 'NoLynch is a restricted name and cannot be used. Please join under a different nickname.'
                 self[Identifier(nick)] = MafiaPlayer(Identifier(nick))
                 bot.msg(self.mainchannel, nick + ' has joined the game. There are currently '+str(len(self.players))+' Players in the game.')
             return None
@@ -134,7 +136,7 @@ class MafiaBot:
 
         elif command == 'unvote':
             if self.active and self._isPlayer(nick):
-                self.votes[Identifier(nick)] = self.NOVOTE
+                self.votes[Identifier(nick)] = (self.NOVOTE, time.clock())
                 self.PrintVotes(bot)
                 return None
             else:
@@ -301,11 +303,11 @@ class MafiaBot:
             # the only non player that is valid is NoLynch, otherwise we return
             elif not param == 'NoLynch':
                 return
-            self.votes[Identifier(nick)] = Identifier(param)
+            self.votes[Identifier(nick)] = (Identifier(param), time.clock())
             # check for majority
             cnt = 0
             for vote in self.votes.values():
-                if vote == param:
+                if vote[0] == param:
                     cnt += 1
             if cnt > len(self.votes)/2:
                 # majority
@@ -317,12 +319,12 @@ class MafiaBot:
     def PrintVotes(self, bot):
         votecounter = {}
         for pair in self.votes.items():
-            if pair[1] not in votecounter:
-                votecounter[pair[1]] = []
-            votecounter[pair[1]].append(pair[0])
+            if pair[1][0] not in votecounter:
+                votecounter[pair[1][0]] = []
+            votecounter[pair[1][0]].append((pair[0], pair[1][1]))
         sortedvotelist = sorted(votecounter.items(), key=lambda x: -len(x[1]) if not x[0] == '' else 1)
-        votestr = ' - '.join(['\x02%s (%u)\x02: %s' % (target if not target == '' else 'No Vote', len(votelist), ', '.join(votelist)) for target, votelist in sortedvotelist])
-        msg = 'Current Votes - %s - %s votes required for a lynch.' % (votestr, len(self.votes)/2 + 1)
+        votestr = ' - '.join(['\x02%s (%u)\x02: %s' % (target if not target == '' else 'No Vote', len(votelist), ', '.join([voter[0] for voter in sorted(votelist, key=lambda x: x[1])])) for target, votelist in sortedvotelist])
+        msg = 'Current Votes - %s - \x02%s\x02 votes required for a lynch.' % (votestr, len(self.votes)/2 + 1)
         bot.msg(self.mainchannel, msg, max_messages=10)
 
     def Lynch(self, nick, bot):
@@ -418,7 +420,7 @@ class MafiaBot:
         self.AssignRoles()
         for nick, player in self.players.items():
             player.dead = False
-            self.votes[Identifier(nick)] = self.NOVOTE
+            self.votes[Identifier(nick)] = (self.NOVOTE, time.clock())
             # send role PM to all of the players
             bot.msg(nick, player.GetRolePM())
             if player.role is not None:
@@ -606,7 +608,7 @@ class MafiaBot:
         self.votes = dict()
         for nick, player in self.players.items():
             if not player.IsDead():
-                self.votes[Identifier(nick)] = self.NOVOTE
+                self.votes[Identifier(nick)] = (self.NOVOTE, time.clock())
                 player.BeginNightPhase(self, bot)
         self.factionkills = self.GetNightKillPower()
         for mafiach in self.mafiachannels:
@@ -662,7 +664,7 @@ class MafiaBot:
                     self.votes = dict()
                     for nick, player in self.players.items():
                         if not player.IsDead():
-                            self.votes[Identifier(nick)] = self.NOVOTE
+                            self.votes[Identifier(nick)] = (self.NOVOTE, time.clock())
                     bot.msg(self.mainchannel, 'Day '+str(self.daycount)+' has just begun. The Town consists of '+self.GetPlayers())
                 else:
                     self.ResetGame()
