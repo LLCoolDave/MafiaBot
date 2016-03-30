@@ -54,8 +54,11 @@ class MafiaSetup(object):
                   'c9': ('C9', 7, 'http://wiki.mafiascum.net/index.php?title=C9', C9),
                   'test': ('Test', 7, 'Only for bot module test. Not intended for actual play.', Test)}
 
+    REDUCTION_MAFIA = 0
+    REDUCTION_PLAYERS = 1
+
     def __init__(self):
-        self.requiredplayers = 0
+        self.requiredplayers = None
         self.predefined = False
         self.predefinedName = ''
         self.rolelist = []
@@ -64,6 +67,8 @@ class MafiaSetup(object):
         self.daystart = False
         self.revealfaction = True
         self.revealrole = True
+        self.mafiakillpower = 1
+        self.killpowerreduction = None
 
     def GetRequiredPlayers(self):
         return self.requiredplayers
@@ -73,7 +78,7 @@ class MafiaSetup(object):
 
     def HandleCommand(self, nick, rawcommand, mafiabot):
         if rawcommand is not None:
-            params = rawcommand.split()
+            params = rawcommand.lower().split()
         else:
             params = None
         retstr = None
@@ -115,6 +120,7 @@ class MafiaSetup(object):
                 retstr = "This game will start at night 1."
             elif params[0] == 'unload':
                 self.predefined = False
+                self.requiredplayers = len(self.rolelist) if self.rolelist else None
                 retstr = "Unloaded predefined setup."
             elif params[0] == 'playercount':
                 if self.predefined:
@@ -134,6 +140,27 @@ class MafiaSetup(object):
             elif params[0] == 'drop':
                 if not self.predefined:
                     retstr = self.DropRole(params[1:], mafiabot)
+            elif params[0] == 'killpower':
+                if not self.predefined:
+                    try:
+                        self.mafiakillpower = int(params[1])
+                        retstr = 'Mafia night kill power set to %u.' % self.mafiakillpower
+                    except:
+                        pass
+            elif params[0] == 'killpowerreduction':
+                if not self.predefined:
+                    if params[1] == 'mafia':
+                        try:
+                            self.killpowerreduction = (self.REDUCTION_MAFIA, int(params[2]))
+                            retstr = 'Killpower will be reduced to 1 once there is %u or less Mafia left in the game.'
+                        except:
+                            pass
+                    elif params[1] == 'players':
+                        try:
+                            self.killpowerreduction = (self.REDUCTION_PLAYERS, int(params[2]))
+                            retstr = 'Killpower will be reduced to 1 once there is %u or less Players left in the game.'
+                        except:
+                            pass
         return retstr
 
     def AddRole(self, params, mafiabot):
@@ -163,7 +190,10 @@ class MafiaSetup(object):
                 settings[split[0]] = split[1]
                 retstr += ' '+param
         self.rolelist.append((faction, params[1].lower(), settings))
-        self.requiredplayers += 1
+        if self.requiredplayers is None:
+            self.requiredplayers = 1
+        else:
+            self.requiredplayers += 1
         return retstr
 
     def ModifyRole(self, params, mafiabot):
@@ -201,6 +231,7 @@ class MafiaSetup(object):
         self.predefined = True
         self.predefinedName = params[0]
         setup = self.PREDEFINED[params[0]]
+        self.requiredplayers = setup[1] if setup[1] is not None else 0
         return 'Loaded setup '+setup[0]+': '+setup[2]
 
     def GetSetupDescription(self, nick, mafiabot):
@@ -221,7 +252,14 @@ class MafiaSetup(object):
             closedstr = 'a closed'
         else:
             closedstr = 'an open'
-        retstr = 'This is '+closedstr+' '+daystartstr+' setup for '+str(self.requiredplayers)+' players. It features the following roles:'
+        killpowerreductionstr = ''
+        if self.killpowerreduction is not None:
+            if self.killpowerreduction[0] == self.REDUCTION_MAFIA:
+                killpowerreductionstr = ' until only %u Mafia are left.' % self.killpowerreduction[1]
+            elif self.killpowerreduction[0] == self.REDUCTION_PLAYERS:
+                killpowerreductionstr = ' until only %u Players are left.' % self.killpowerreduction[1]
+        killpowerstr = 'Mafia has %u night kill power%s.' % (self.mafiakillpower, killpowerreductionstr)
+        retstr = 'This is '+closedstr+' '+daystartstr+' setup for '+str(self.requiredplayers)+' players. '+killpowerstr+' It features the following roles:'
         i = 0
         for role in self.rolelist:
             retstr += ' \x02'+str(i) + '\x02: '+self._RoleToString(role)
@@ -238,4 +276,4 @@ class MafiaSetup(object):
             rolelist = setup[3](playercount)
         else:
             rolelist = self.rolelist
-        return rolelist
+        return list(rolelist)

@@ -20,7 +20,7 @@ class Alien(MafiaRole):
     def HandleCommand(self, command, param, bot, mb, player):
         if command == 'probes':
             # get all other probed players
-            probed = [str(pl) for pl in mb.players if (mb.players[pl].IsProbed() and not mb.players[pl].IsDead() and mb.players[pl] is not player)]
+            probed = [str(pl.name) for pl in mb.players.values() if (pl.IsProbed() and not pl.IsDead() and pl is not player)]
             return 'The probed players are: '+', '.join(probed)
         elif self.requiredaction:
             if command == 'visit':
@@ -45,14 +45,14 @@ class Alien(MafiaRole):
 
     def CheckSpecialWinCondition(self, mb):
         # get a list of all alive players that are not probed
-        unprobed = [player for player in mb.players if (not mb.players[player].IsProbed() and not mb.players[player].IsDead())]
+        unprobed = [str(player.name) for player in mb.players if (not player.IsProbed() and not player.IsDead())]
         if unprobed:
             return False
         else:
             return True
 
     def SpecialWin(self, winner, mb, bot):
-        bot.msg(mb.mainchannel, 'The Alien wins this game! Congratulations to '+str(winner), max_messages=10)
+        bot.msg(mb.mainchannel, 'The Alien wins this game! Congratulations to '+str(winner.name), max_messages=10)
         bot.msg(mb.mainchannel, 'The roles this game were - '+mb.GetRoleList(), max_messages=10)
 
     def StartGame(self, bot, player, mafiabot):
