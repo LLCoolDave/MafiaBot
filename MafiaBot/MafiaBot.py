@@ -49,7 +49,8 @@ class MafiaBot:
         self.players[key] = value
 
     def Send(self, target, message, **kwargs):
-        self.communication.send(target, message, **kwargs)
+        if message is not None:
+            self.communication.send(target, message, **kwargs)
 
     def Action(self, *varargs):
         self.communication.action(*varargs)
@@ -91,7 +92,7 @@ class MafiaBot:
             if not player.IsDead():
                 response = player.HandleCommand(command.lower(), param, self)
                 if response is not None:
-                    self.Send(nick, response)
+                    self.Send(player, response)
 
     def HandleCommand(self, command, source, nick, param):
 
@@ -108,7 +109,7 @@ class MafiaBot:
             # rejoin new channels and set silent mode for mafia channels
             for chn in self.mafiachannels:
                 self.JoinChannel(chn)
-                self.Action('MODE ', chn+' +s')
+                self.Action('MODE ', str(chn) + ' +s')
             self.JoinChannel(self.deadchat)
 
         elif command == 'deadchat':
@@ -151,8 +152,8 @@ class MafiaBot:
         elif command == 'time':
             if self.active and self.phase == self.DAYPHASE:
                 timepassed = int(time.clock() - self.time)
-                hours = timepassed / 3600
-                minutes = (timepassed % 3600) / 60
+                hours = timepassed // 3600
+                minutes = (timepassed % 3600) // 60
                 seconds = timepassed % 60
                 self.Send(source, 'It has been '+str(hours).zfill(1)+':'+str(minutes).zfill(2)+':'+str(seconds).zfill(2)+' since the start of the day.')
 
@@ -165,7 +166,7 @@ class MafiaBot:
         elif command == 'kill':
             # check if message came from a mafia channel
             player = self.GetPlayer(nick)
-            if player is not None and str(source) in self.mafiachannels:
+            if player is not None and source in self.mafiachannels:
                 # check if it is night
                 if self.phase == self.NIGHTPHASE:
                     # check if player is alive and mafia
@@ -182,6 +183,7 @@ class MafiaBot:
                                     self.actionlist.append(MafiaAction(MafiaAction.KILL, player, target, True))
                                     self.factionkills -= 1
                                     self.Send(source, nick+' will kill '+param+' tonight.')
+                                    return
 
                             # couldn't find valid kill target
                             self.Send(source, param + ' is not a player that can be killed!')
@@ -189,7 +191,7 @@ class MafiaBot:
         elif command == 'nokill':
             # check if message came from a mafia channel
             player = self.GetPlayer(nick)
-            if player is not None and str(source) in self.mafiachannels:
+            if player is not None and source in self.mafiachannels:
                 # check if it is night
                 if self.phase == self.NIGHTPHASE:
                     # check if player is alive and mafia
@@ -315,7 +317,7 @@ class MafiaBot:
             for vote in self.votes.values():
                 if vote[0] == param:
                     cnt += 1
-            if cnt > len(self.votes)/2:
+            if cnt > len(self.votes)//2:
                 # majority
                 self.Lynch(param)
             else:
@@ -330,7 +332,7 @@ class MafiaBot:
             votecounter[pair[1][0]].append((pair[0], pair[1][1]))
         sortedvotelist = sorted(votecounter.items(), key=lambda x: -len(x[1]) if not x[0] == '' else 1)
         votestr = ' - '.join(['\x02%s (%u)\x02: %s' % (str(target) if not target == '' else 'No Vote', len(votelist), ', '.join([str(voter[0]) for voter in sorted(votelist, key=lambda x: x[1])])) for target, votelist in sortedvotelist])
-        msg = 'Current Votes - %s - \x02%s\x02 votes required for a lynch.' % (votestr, len(self.votes)/2 + 1)
+        msg = 'Current Votes - %s - \x02%s\x02 votes required for a lynch.' % (votestr, len(self.votes)//2 + 1)
         self.Send(self.mainchannel, msg, max_messages=10)
 
     def Lynch(self, nick):
@@ -581,7 +583,7 @@ class MafiaBot:
                 killstatus, flipmsg = kill.target.Kill(self, True)
                 if killstatus:
                     nokills = False
-                    self.Send(self.mainchannel, kill.target+flipmsg+' has died tonight!', max_messages=10)
+                    self.Send(self.mainchannel, str(kill.target)+flipmsg+' has died tonight!', max_messages=10)
         if nokills:
             self.Send(self.mainchannel, 'Nobody has died tonight!', max_messages=10)
         # reset actionlist
@@ -646,7 +648,7 @@ class MafiaBot:
         if self.joinchannels:
             for chn in self.mafiachannels:
                 self.JoinChannel(chn)
-                self.Action('MODE ', chn+' +s')
+                self.Action('MODE ', str(chn) + ' +s')
             self.JoinChannel(self.deadchat)
             self.JoinChannel(self.mainchannel)
             self.joinchannels = False

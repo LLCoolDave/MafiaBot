@@ -1,13 +1,13 @@
-from Gun import Gun
-from FakeGun import FakeGun
-from BulletproofVest import BulletproofVest
-from FakeVest import FakeVest
-from Syringe import Syringe
-from FakeSyringe import FakeSyringe
-from BackgroundCheck import BackgroundCheck
-from FakeBackgroundCheck import FakeBackgroundCheck
-from FakeBread import FakeBread
-from Probe import Probe
+from .Gun import Gun
+from .FakeGun import FakeGun
+from .BulletproofVest import BulletproofVest
+from .FakeVest import FakeVest
+from .Syringe import Syringe
+from .FakeSyringe import FakeSyringe
+from .BackgroundCheck import BackgroundCheck
+from .FakeBackgroundCheck import FakeBackgroundCheck
+from .FakeBread import FakeBread
+from .Probe import Probe
 
 Items = {'gun': Gun,
          'fakegun': FakeGun, 'fake gun': FakeGun,

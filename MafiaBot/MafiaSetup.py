@@ -1,5 +1,5 @@
-from MafiaPlayer import MafiaPlayer
-from Roles.rolelist import Roles
+from .MafiaPlayer import MafiaPlayer
+from .Roles.rolelist import Roles
 import random
 
 
