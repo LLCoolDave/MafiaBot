@@ -1,5 +1,4 @@
 from MafiaBot.MafiaRole import MafiaRole
-from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 
 
@@ -28,13 +27,13 @@ class ParityCop(MafiaRole):
         if self.requiredaction:
             if command == 'check':
                 if not self.limiteduses == 0:
-                    target = Identifier(param)
-                    if target in mb.players:
-                        if not mb.players[target].IsDead():
-                            if mb.players[target] is player:
+                    target = mb.GetPlayer(param)
+                    if target is not None:
+                        if not target.IsDead():
+                            if target is player:
                                 return 'You cannot investigate yourself!'
                             else:
-                                mb.actionlist.append(MafiaAction(MafiaAction.CALLBACK, player.name, target, True, {'callback': self.Callback}))
+                                mb.actionlist.append(MafiaAction(MafiaAction.CALLBACK, player, target, True, {'callback': self.Callback}))
                                 self.requiredaction = False
                                 self.currentcheck = target
                                 player.UpdateActions()
@@ -66,8 +65,8 @@ class ParityCop(MafiaRole):
             if self.lastcheck is None:
                 mafiabot.Send(source, 'You investigated '+str(self.currentcheck)+' tonight. Now if you only had something to compare the results with.', max_messages=10)
             else:
-                lastfaction = mafiabot.players[self.lastcheck].GetFaction()
-                currentfaction = mafiabot.players[self.currentcheck].GetFaction()
+                lastfaction = self.lastcheck.GetFaction()
+                currentfaction = self.currentcheck.GetFaction()
                 if lastfaction == currentfaction:
                     reply = 'the same faction.'
                 else:

@@ -1,6 +1,4 @@
 from MafiaBot.MafiaItem import MafiaItem
-from sopel.tools import Identifier
-from MafiaBot.MafiaAction import MafiaAction
 
 
 class Probe(MafiaItem):

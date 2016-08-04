@@ -1,5 +1,4 @@
 from MafiaBot.MafiaRole import MafiaRole
-from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 
 
@@ -23,13 +22,13 @@ class Armorsmith(MafiaRole):
         if self.requiredaction:
             if command == 'send':
                 if not self.limiteduses == 0:
-                    target = Identifier(param)
-                    if target in mb.players:
-                        if not mb.players[target].IsDead():
-                            if mb.players[target] is player:
+                    target = mb.GetPlayer(param)
+                    if target is not None:
+                        if not target.IsDead():
+                            if target is player:
                                 return 'You cannot give a vest to yourself!'
                             else:
-                                mb.actionlist.append(MafiaAction(MafiaAction.SENDITEM, player.name, target, True, {'item': 'vest'}))
+                                mb.actionlist.append(MafiaAction(MafiaAction.SENDITEM, player, target, True, {'item': 'vest'}))
                                 self.requiredaction = False
                                 player.UpdateActions()
                                 ret = 'You send a bulletproof vest to '+str(target)+' tonight.'

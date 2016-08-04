@@ -1,5 +1,4 @@
 from MafiaBot.MafiaRole import MafiaRole
-from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 
 
@@ -23,13 +22,13 @@ class Vigilante(MafiaRole):
         if self.requiredaction:
             if command == 'shoot':
                 if not self.limiteduses == 0:
-                    target = Identifier(param)
-                    if target in mb.players:
-                        if not mb.players[target].IsDead():
-                            if mb.players[target] is player:
+                    target = mb.GetPlayer(param)
+                    if target is not None:
+                        if not target.IsDead():
+                            if target is player:
                                 return 'You cannot shoot yourself!'
                             else:
-                                mb.actionlist.append(MafiaAction(MafiaAction.KILL, player.name, target, True))
+                                mb.actionlist.append(MafiaAction(MafiaAction.KILL, player, target, True))
                                 self.requiredaction = False
                                 player.UpdateActions()
                                 ret = 'You will shoot '+str(target)+' tonight.'

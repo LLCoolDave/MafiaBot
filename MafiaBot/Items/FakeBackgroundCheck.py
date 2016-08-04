@@ -1,5 +1,4 @@
 from MafiaBot.MafiaItem import MafiaItem
-from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 
 
@@ -23,13 +22,13 @@ class FakeBackgroundCheck(MafiaItem):
 
     def HandleCommand(self, param, player, mb):
         if self.requiredaction:
-            target = Identifier(param)
-            if target in mb.players:
-                if not mb.players[target].IsDead():
-                    if mb.players[target] is player:
+            target = mb.GetPlayer(param)
+            if target is not None:
+                if not target.IsDead():
+                    if target is player:
                         return 'You cannot investigate yourself!'
                     else:
-                        mb.actionlist.append(MafiaAction(MafiaAction.CHECKFACTION, player.name, target, True, {'sanity': 'naive'}))
+                        mb.actionlist.append(MafiaAction(MafiaAction.CHECKFACTION, player, target, True, {'sanity': 'naive'}))
                         self.requiredaction = False
                         player.UpdateActions()
                         return True, 'You will investigate '+str(target)+' tonight.'

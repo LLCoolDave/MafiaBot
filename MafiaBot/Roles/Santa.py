@@ -1,5 +1,4 @@
 from MafiaBot.MafiaRole import MafiaRole
-from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 import random
 
@@ -24,10 +23,10 @@ class Santa(MafiaRole):
         if self.requiredaction:
             if command == 'send':
                 if not self.limiteduses == 0:
-                    target = Identifier(param)
-                    if target in mb.players:
-                        if not mb.players[target].IsDead():
-                            if mb.players[target] is player:
+                    target = mb.GetPlayer(param)
+                    if target is not None:
+                        if not target.IsDead():
+                            if target is player:
                                 return 'You cannot give a present to yourself!'
                             else:
                                 rnd = random.randint(1, 4)
@@ -41,7 +40,7 @@ class Santa(MafiaRole):
                                     item = 'syringe'
                                 else:
                                     item = ''
-                                mb.actionlist.append(MafiaAction(MafiaAction.SENDITEM, player.name, target, True, {'item': item}))
+                                mb.actionlist.append(MafiaAction(MafiaAction.SENDITEM, player, target, True, {'item': item}))
                                 self.requiredaction = False
                                 player.UpdateActions()
                                 ret = 'You send a present to '+str(target)+' tonight.'

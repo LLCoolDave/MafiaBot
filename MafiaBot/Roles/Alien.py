@@ -1,5 +1,4 @@
 from MafiaBot.MafiaRole import MafiaRole
-from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 from MafiaBot.Items.Probe import Probe
 
@@ -25,13 +24,13 @@ class Alien(MafiaRole):
         elif self.requiredaction:
             if command == 'visit':
                 if not self.limiteduses == 0:
-                    target = Identifier(param)
-                    if target in mb.players:
-                        if not mb.players[target].IsDead():
-                            if mb.players[target] is player:
+                    target = mb.GetPlayer(param)
+                    if target is not None:
+                        if not target.IsDead():
+                            if target is player:
                                 return 'You cannot give a probe to yourself!'
                             else:
-                                mb.actionlist.append(MafiaAction(MafiaAction.SENDITEM, player.name, target, True, {'item': 'probe'}))
+                                mb.actionlist.append(MafiaAction(MafiaAction.SENDITEM, player, target, True, {'item': 'probe'}))
                                 self.requiredaction = False
                                 player.UpdateActions()
                                 ret = 'You probe '+str(target)+' tonight.'
@@ -45,7 +44,7 @@ class Alien(MafiaRole):
 
     def CheckSpecialWinCondition(self, mb):
         # get a list of all alive players that are not probed
-        unprobed = [str(player.name) for player in mb.players if (not player.IsProbed() and not player.IsDead())]
+        unprobed = [str(player.name) for player in mb.players.values() if (not player.IsProbed() and not player.IsDead())]
         if unprobed:
             return False
         else:

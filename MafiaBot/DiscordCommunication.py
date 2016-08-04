@@ -1,6 +1,4 @@
-from sopel.tools import Identifier
 from .MafiaPlayer import MafiaPlayer
-import random
 
 
 class SopelCommunication(object):
@@ -14,13 +12,13 @@ class SopelCommunication(object):
         self.bot.msg(Identifier(target), message, **kwargs)
 
     def action(self, *varargs):
-        self.bot.write(tuple(*varargs))
+        pass
 
     def join(self, channel):
-        self.bot.join(channel)
+        pass
 
     def leave(self, channel):
-        self.bot.part(channel)
+        pass
 
     def get_id(self, name):
         return str(name).lower()
@@ -33,3 +31,7 @@ class SopelCommunication(object):
 
     def get_mafia_chat(self):
         return ['#mafia'+str(random.randrange(10000))]
+
+
+class DiscordChannelWrapper(object):
+

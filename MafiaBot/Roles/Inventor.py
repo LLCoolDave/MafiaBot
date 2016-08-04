@@ -1,5 +1,4 @@
 from MafiaBot.MafiaRole import MafiaRole
-from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 
 
@@ -29,10 +28,10 @@ class Inventor(MafiaRole):
                 if not self.limiteduses == 0:
                     splits = param.split(' ', 1)
                     if len(splits) == 2:
-                        target = Identifier(splits[0])
-                        if target in mb.players:
-                            if not mb.players[target].IsDead():
-                                if mb.players[target] is player:
+                        target = mb.GetPlayer(splits[0])
+                        if target is not None:
+                            if not target.IsDead():
+                                if target is player:
                                     return 'You cannot give an item to yourself!'
                                 else:
                                     itemstr = splits[1].lower()
@@ -40,7 +39,7 @@ class Inventor(MafiaRole):
                                         return 'I do not know the item '+splits[1]
                                     if self.items[itemstr] == 0:
                                         return 'You have already handed out your copy of '+splits[1]
-                                    mb.actionlist.append(MafiaAction(MafiaAction.SENDITEM, player.name, target, True, {'item': itemstr}))
+                                    mb.actionlist.append(MafiaAction(MafiaAction.SENDITEM, player, target, True, {'item': itemstr}))
                                     self.items[itemstr] = 0
                                     self.requiredaction = False
                                     player.UpdateActions()

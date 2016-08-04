@@ -23,7 +23,7 @@ class CorruptBureaucrat(MafiaRole):
         if self.requiredaction:
             if command == 'check':
                 if not self.limiteduses == 0:
-                    mb.actionlist.append(MafiaAction(MafiaAction.CALLBACK, player.name, None, False, {'callback': self.ReceiveRoleList}))
+                    mb.actionlist.append(MafiaAction(MafiaAction.CALLBACK, player, None, False, {'callback': self.ReceiveRoleList}))
                     self.requiredaction = False
                     player.UpdateActions()
                     ret = 'You choose to use your power tonight.'

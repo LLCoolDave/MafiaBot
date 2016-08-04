@@ -1,6 +1,4 @@
 from MafiaBot.MafiaItem import MafiaItem
-from sopel.tools import Identifier
-from MafiaBot.MafiaAction import MafiaAction
 
 
 class FakeSyringe(MafiaItem):
@@ -23,9 +21,9 @@ class FakeSyringe(MafiaItem):
 
     def HandleCommand(self, param, player, mb):
         if self.requiredaction:
-            target = Identifier(param)
-            if target in mb.players:
-                if not mb.players[target].IsDead():
+            target = mb.GetPlayer(param)
+            if target is not None:
+                if not target.IsDead():
                     self.requiredaction = False
                     player.UpdateActions()
                     return True, 'You will protect '+str(target)+' tonight.'

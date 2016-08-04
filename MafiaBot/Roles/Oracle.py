@@ -1,6 +1,4 @@
 from MafiaBot.MafiaRole import MafiaRole
-from sopel.tools import Identifier
-from MafiaBot.MafiaAction import MafiaAction
 
 
 class Oracle(MafiaRole):
@@ -27,10 +25,10 @@ class Oracle(MafiaRole):
         if self.requiredaction:
             if command == 'pick':
                 if not self.limiteduses == 0:
-                    target = Identifier(param)
-                    if target in mb.players:
-                        if not mb.players[target].IsDead():
-                            if mb.players[target] is player:
+                    target = mb.GetPlayer(param)
+                    if target is not None:
+                        if not target.IsDead():
+                            if target is player:
                                 return 'You cannot pick yourself!'
                             else:
                                 self.target = target
@@ -57,8 +55,8 @@ class Oracle(MafiaRole):
 
     def Kill(self, mafiabot):
         if self.target is not None:
-            if mafiabot.players[self.target].role is not None:
-                rolestr = ' '+mafiabot.players[self.target].role.GetRoleName()
+            if self.target.role is not None:
+                rolestr = ' '+self.target.role.GetRoleName()
             else:
                 rolestr = ''
-            mafiabot.Send.msg(mafiabot.mainchannel, 'The oracle reveals that '+str(self.target)+' is a '+mafiabot.players[self.target].GetFaction()+rolestr+'.')
+            mafiabot.Send.msg(mafiabot.mainchannel, 'The oracle reveals that '+str(self.target)+' is a '+self.target.GetFaction()+rolestr+'.')

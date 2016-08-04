@@ -1,5 +1,4 @@
 from MafiaBot.MafiaRole import MafiaRole
-from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 
 
@@ -27,17 +26,17 @@ class Prostitute(MafiaRole):
         if self.requiredaction:
             if command == 'block':
                 if not self.limiteduses == 0:
-                    target = Identifier(param)
+                    target = mb.GetPlayer(param)
                     if self.lastpick[0] is None or self.lastpick[1]+1 < mb.daycount:
-                        lastpick = Identifier('')
+                        lastpick = None
                     else:
                         lastpick = self.lastpick[0]
-                    if target in mb.players:
-                        if not mb.players[target].IsDead():
-                            if mb.players[target] is player or target == lastpick:
+                    if target is not None:
+                        if not target.IsDead():
+                            if target is player or target is lastpick:
                                 return 'You cannot block that player.'
                             else:
-                                mb.actionlist.append(MafiaAction(MafiaAction.BLOCK, player.name, target, True, {'faction': player.faction}))
+                                mb.actionlist.append(MafiaAction(MafiaAction.BLOCK, player, target, True, {'faction': player.faction}))
                                 self.requiredaction = False
                                 player.UpdateActions()
                                 ret = 'You block '+str(target)+' tonight.'

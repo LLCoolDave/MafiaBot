@@ -1,8 +1,8 @@
-from MafiaItem import MafiaItem
-from Items.itemlist import Items
+from .MafiaItem import MafiaItem
+from .Items.itemlist import Items
 
 
-class MafiaPlayer:
+class MafiaPlayer(object):
 
     FACTION_TOWN = 0
     FACTION_MAFIA = 1
@@ -22,6 +22,9 @@ class MafiaPlayer:
         self.itemused = dict()
         self.afk = False
 
+    def __str__(self):
+        return self.name
+
     def IsDead(self):
         return self.dead
 
@@ -30,7 +33,7 @@ class MafiaPlayer:
         if self.faction == self.FACTION_TOWN:
             ret += 'You are aligned with the Town. You win if only people aligned with town are left alive. '
         elif self.faction == self.FACTION_MAFIA:
-            ret += 'You are aligned with the Mafia. You win if the Mafia are the only players left alive or this cannot be prevented anymore. Join ' + self.mafiachannel + ' to meet your fellow mafia partners. '
+            ret += 'You are aligned with the Mafia. You win if the Mafia are the only players left alive or this cannot be prevented anymore. Join ' + str(self.mafiachannel) + ' to meet your fellow mafia partners. '
         elif self.faction == self.FACTION_MAFIATRAITOR:
             ret += 'You are aligned with the Mafia. You win if the Mafia are the only players left alive or this cannot be prevented anymore. '
         elif self.faction == self.FACTION_THIRDPARTY:
@@ -181,7 +184,7 @@ class MafiaPlayer:
                 return False, ''
         self.dead = True
         # inform the player that they died
-        mb.Send(self.name, "You have died. You may join the dead chat at "+mb.deadchat)
+        mb.Send(self.name, "You have died. You may join the dead chat at "+str(mb.deadchat))
         if self.role is not None:
             self.role.Kill(mb)
         flipmsg = ''

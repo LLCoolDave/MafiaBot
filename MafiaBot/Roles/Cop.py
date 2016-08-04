@@ -1,5 +1,4 @@
 from MafiaBot.MafiaRole import MafiaRole
-from sopel.tools import Identifier
 from MafiaBot.MafiaAction import MafiaAction
 
 
@@ -30,13 +29,13 @@ class Cop(MafiaRole):
         if self.requiredaction:
             if command == 'check':
                 if not self.limiteduses == 0:
-                    target = Identifier(param)
-                    if target in mb.players:
-                        if not mb.players[target].IsDead():
-                            if mb.players[target] is player:
+                    target = mb.GetPlayer(param)
+                    if target is not None:
+                        if not target.IsDead():
+                            if target is player:
                                 return 'You cannot investigate yourself!'
                             else:
-                                mb.actionlist.append(MafiaAction(MafiaAction.CHECKFACTION, player.name, target, True, {'sanity': self.sanity}))
+                                mb.actionlist.append(MafiaAction(MafiaAction.CHECKFACTION, player, target, True, {'sanity': self.sanity}))
                                 self.requiredaction = False
                                 player.UpdateActions()
                                 ret = 'You investigate '+str(target)+' tonight.'
