@@ -23,7 +23,7 @@ class Prostitute(MafiaRole):
     def GetRoleDescription():
         return 'Prostitutes are roleblockers, disabling the active abilities of another player at night. Roleblocks do not interfer with each other, but prevent all other actions by the blocked player. A prositute may not pick the same player on two consecutive nights.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'block':
                 if not self.limiteduses == 0:
@@ -50,7 +50,7 @@ class Prostitute(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Prostitute: You may roleblock another player tonight. Use !block <player> to block that player.'

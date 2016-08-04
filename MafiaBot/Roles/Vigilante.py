@@ -19,7 +19,7 @@ class Vigilante(MafiaRole):
     def GetRoleDescription():
         return 'Vigilantes execute judgement on their own account. During the night, a vigilante may shoot his gun to kill another player.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'shoot':
                 if not self.limiteduses == 0:
@@ -41,7 +41,7 @@ class Vigilante(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Vigilante: You may shoot another player tonight. Use !shoot <player> to kill that player.'

@@ -20,8 +20,8 @@ class BulletproofVest(MafiaItem):
     def ItemDescription():
         return 'Bulletproof vests protect their owners. They counteract one night kill and are then consumed. Their owner is informed when this happens.'
 
-    def HandleCommand(self, param, player, bot, mb):
+    def HandleCommand(self, param, player, mb):
         return False, None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         return ''

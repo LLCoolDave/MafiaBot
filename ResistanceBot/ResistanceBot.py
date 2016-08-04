@@ -178,7 +178,7 @@ class ResistanceBot:
                 votestring += 'No'
             votestrings.append(votestring)
         bot.msg(self.channel, 'Votes on team %s proposed by %s: %s' % (', '.join(self.team), self.leader, ' - '.join(votestrings)), max_messages=10)
-        if positive >= negative:
+        if positive > negative:
             self.StartMission(bot)
         else:
             self.votecount += 1

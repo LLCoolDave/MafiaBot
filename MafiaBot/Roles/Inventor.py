@@ -23,7 +23,7 @@ class Inventor(MafiaRole):
     def GetRoleDescription():
         return 'Inventors hand out items to other players at night. They only have one copy of each item. The possible items are: Background Check, Bulletproof Vest, Gun, Syringe'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'send':
                 if not self.limiteduses == 0:
@@ -54,7 +54,7 @@ class Inventor(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Inventor: You may send another player an item tonight. Use !send <player> <check/gun/syringe/vest> to give that item to that player.'

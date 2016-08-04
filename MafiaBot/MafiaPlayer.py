@@ -60,7 +60,7 @@ class MafiaPlayer:
         self.requiredaction = reqaction
         self.mandatoryaction = manaction
 
-    def HandleCommand(self, command, param, bot, mb):
+    def HandleCommand(self, command, param, mb):
         if command == 'pass':
             if self.requiredaction:
                 if self.role is not None:
@@ -85,7 +85,7 @@ class MafiaPlayer:
                         itemparam = paramsplits[1]
                     else:
                         itemparam = ''
-                    returnpair = self.items[paramsplits[0].lower()].HandleCommand(itemparam, self, bot, mb)
+                    returnpair = self.items[paramsplits[0].lower()].HandleCommand(itemparam, self, mb)
                     if returnpair[0]:
                         # if it is a limited use item type, we mark it as used for the night
                         if self.items[paramsplits[0].lower()].type in self.itemused:
@@ -113,11 +113,11 @@ class MafiaPlayer:
         else:
             if self.role is not None:
                 # forward to role to handle
-                return self.role.HandleCommand(command, param, bot, mb, self)
+                return self.role.HandleCommand(command, param, mb, self)
 
         return None
 
-    def ReceiveItem(self, item, bot, mafiabot):
+    def ReceiveItem(self, item, mafiabot):
         i = 1
         if item in Items:
             basename = Items[item].GetBaseName()
@@ -128,7 +128,7 @@ class MafiaPlayer:
             self.items[itemname] = Items[item](itemname, mafiabot.daycount)
             itempm = self.items[itemname].ReceiveItemPM()
             if not itempm == '':
-                bot.msg(self.name, itempm)
+                mafiabot.Send(self.name, itempm)
 
     def GetFaction(self):
         if self.faction == self.FACTION_MAFIA:
@@ -142,24 +142,24 @@ class MafiaPlayer:
         else:
             return 'None'
 
-    def BeginNightPhase(self, mb, bot):
+    def BeginNightPhase(self, mb):
         self.afk = False
         nightactionstr = ''
         # reset limited uses for item types
         self.itemused = {MafiaItem.GUN: False, MafiaItem.SYRINGE: False, MafiaItem.CHECK: False}
         if self.role is not None:
-            roleactionstr = self.role.BeginNightPhase(mb, self, bot)
+            roleactionstr = self.role.BeginNightPhase(mb, self)
             if not roleactionstr == '':
                 nightactionstr += roleactionstr + ' '
         for item in self.items.values():
-            itemactionstr = item.BeginNightPhase(mb, self, bot)
+            itemactionstr = item.BeginNightPhase(mb, self)
             if not itemactionstr == '':
                 nightactionstr += itemactionstr + ' '
         self.UpdateActions()
         if not nightactionstr == '':
-            bot.msg(self.name, 'You have to take the following night actions. Use !pass to skip on remaining night actions. '+nightactionstr.rstrip(), max_messages=10)
+            mb.Send(self.name, 'You have to take the following night actions. Use !pass to skip on remaining night actions. '+nightactionstr.rstrip(), max_messages=10)
 
-    def Kill(self, mb, bot, checkprotection):
+    def Kill(self, mb, checkprotection):
         # only do something if we aren't already dead anyway
         if self.dead:
             return False, ''
@@ -176,14 +176,14 @@ class MafiaPlayer:
                 # consume vest
                 del self.items[bpname]
                 # inform player of being hit
-                bot.msg(self.name, "Ouch! You have been hit, but your bulletproof vest " + str(bpname) + " protected you.")
+                mb.Send(self.name, "Ouch! You have been hit, but your bulletproof vest " + str(bpname) + " protected you.")
                 # exit
                 return False, ''
         self.dead = True
         # inform the player that they died
-        bot.msg(self.name, "You have died. You may join the dead chat at "+mb.deadchat)
+        mb.Send(self.name, "You have died. You may join the dead chat at "+mb.deadchat)
         if self.role is not None:
-            self.role.Kill(bot, mb)
+            self.role.Kill(mb)
         flipmsg = ''
         if mb.revealfactionondeath:
             flipmsg += self.GetFaction()
@@ -199,8 +199,8 @@ class MafiaPlayer:
         else:
             return False
 
-    def SpecialWin(self, winner, mb, bot):
-        self.role.SpecialWin(winner, mb, bot)
+    def SpecialWin(self, winner, mb):
+        self.role.SpecialWin(winner, mb)
 
     def NightKillPower(self):
         nkpower = 0

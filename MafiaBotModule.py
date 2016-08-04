@@ -1,13 +1,13 @@
 from sopel import module
-import MafiaBot.MafiaBot
+from MafiaBot.MafiaBot import MafiaBot
+from MafiaBot.SopelCommunication import SopelCommunication
 import ResistanceBot.ResistanceBot
-import random
 
 # ToDo: Modify bot.msg to reduce wait time, otherwise things are way too slow and blocked due to the threadlock on mb
 
 
 def setup(bot):
-    mb = MafiaBot.MafiaBot.MafiaBot()
+    mb = MafiaBot(SopelCommunication(bot))
     bot.memory['MafiaBotDir'] = mb
     rb = ResistanceBot.ResistanceBot.ResistanceBot()
     bot.memory['ResistanceBot'] = rb
@@ -38,8 +38,7 @@ def Reset(bot, trigger):
             for chn in channels:
                 if not chn == '#fridaynightmafia':
                     bot.part(chn)
-        reload(MafiaBot.MafiaBot)
-        mb = MafiaBot.MafiaBot.MafiaBot()
+        mb = MafiaBot(SopelCommunication(bot))
         bot.memory['MafiaBotDir'] = mb
         for chn in mb.mafiachannels:
             bot.join(chn)
@@ -52,7 +51,7 @@ def Reset(bot, trigger):
 def ChannelOnly(bot, trigger):
     response = None
     if bot.memory['mode'] == 'mafia':
-        response = bot.memory['MafiaBotDir'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
+        bot.memory['MafiaBotDir'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2))
     elif bot.memory['mode'] == 'resistance':
         response = bot.memory['ResistanceBot'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
     if response is not None:
@@ -84,7 +83,7 @@ def Help(bot, trigger):
 def AdminOnly(bot, trigger):
     response = None
     if bot.memory['mode'] == 'mafia':
-        response = bot.memory['MafiaBotDir'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
+        bot.memory['MafiaBotDir'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2))
     elif bot.memory['mode'] == 'resistance':
         response = bot.memory['ResistanceBot'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
     if response is not None:
@@ -99,7 +98,7 @@ def AdminOnly(bot, trigger):
 def PlayerAction(bot, trigger):
     response = None
     if bot.memory['mode'] == 'mafia':
-        response = bot.memory['MafiaBotDir'].HandlePlayerCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
+        bot.memory['MafiaBotDir'].HandlePlayerCommand(trigger.group(1), trigger.nick, trigger.group(2))
     elif bot.memory['mode'] == 'resistance':
         response = bot.memory['ResistanceBot'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
     if response is not None:
@@ -110,7 +109,7 @@ def PlayerAction(bot, trigger):
 def Generic(bot, trigger):
     response = None
     if bot.memory['mode'] == 'mafia':
-        response = bot.memory['MafiaBotDir'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
+        bot.memory['MafiaBotDir'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2))
     elif bot.memory['mode'] == 'resistance':
         response = bot.memory['ResistanceBot'].HandleCommand(trigger.group(1), trigger.sender, trigger.nick, trigger.group(2), bot)
     if response is not None:
@@ -120,7 +119,7 @@ def Generic(bot, trigger):
             bot.say(response, max_messages=10)
 
 
-@module.interval(5)
+@module.interval(1)
 def GameLoop(bot):
     if bot.memory['mode'] == 'mafia':
         # main game loop, check for states and handle them as necessary

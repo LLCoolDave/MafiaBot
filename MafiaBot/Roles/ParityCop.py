@@ -24,7 +24,7 @@ class ParityCop(MafiaRole):
     def GetRoleDescription():
         return 'Parity Cops investigate other player\'s faction at night. They will receive a report if their target has the same or a different faction than their last successful check.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'check':
                 if not self.limiteduses == 0:
@@ -47,7 +47,7 @@ class ParityCop(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Parity Cop: You may investigate another player tonight. Use !check <player> to investigate that player.'
@@ -59,12 +59,12 @@ class ParityCop(MafiaRole):
         else:
             return ''
 
-    def Callback(self, source, bot, mafiabot, blocked):
+    def Callback(self, source, mafiabot, blocked):
         if blocked:
-            bot.msg(source, 'You were blocked tonight.', max_messages=10)
+            mafiabot.Send(source, 'You were blocked tonight.', max_messages=10)
         else:
             if self.lastcheck is None:
-                bot.msg(source, 'You investigated '+str(self.currentcheck)+' tonight. Now if you only had something to compare the results with.', max_messages=10)
+                mafiabot.Send(source, 'You investigated '+str(self.currentcheck)+' tonight. Now if you only had something to compare the results with.', max_messages=10)
             else:
                 lastfaction = mafiabot.players[self.lastcheck].GetFaction()
                 currentfaction = mafiabot.players[self.currentcheck].GetFaction()
@@ -72,5 +72,5 @@ class ParityCop(MafiaRole):
                     reply = 'the same faction.'
                 else:
                     reply = 'different factions.'
-                bot.msg(source, 'Your investigations show that '+str(self.lastcheck)+' and '+str(self.currentcheck)+' belong to ' + reply, max_messages=10)
+                mafiabot.Send(source, 'Your investigations show that '+str(self.lastcheck)+' and '+str(self.currentcheck)+' belong to ' + reply, max_messages=10)
             self.lastcheck = self.currentcheck

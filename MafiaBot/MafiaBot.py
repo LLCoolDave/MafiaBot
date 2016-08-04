@@ -20,7 +20,8 @@ class MafiaBot:
 
     NOVOTE = ''
 
-    def __init__(self):
+    def __init__(self, communication):
+        self.communication = communication
         self.deadchat = ''
         self.mafiachannels = []
         self.players = dict()
@@ -48,6 +49,18 @@ class MafiaBot:
     def __setitem__(self, key, value):
         self.players[key] = value
 
+    def Send(self, target, message, **kwargs):
+        self.communication.send(target, message, **kwargs)
+
+    def Action(self, *varargs):
+        self.communication.action(*varargs)
+
+    def JoinChannel(self, channel):
+        self.communication.join(channel)
+
+    def LeaveChannel(self, channel):
+        self.communication.leave(channel)
+
     def _getPlayer(self, name):
         try:
             return self.players[Identifier(name)]
@@ -73,14 +86,15 @@ class MafiaBot:
         self.setup = MafiaSetup()
         self.time = time.clock()
 
-    def HandlePlayerCommand(self, command, source, nick, param, bot):
+    def HandlePlayerCommand(self, command, nick, param):
         player = self._getPlayer(nick)
         if player is not None:
             if not player.IsDead():
-                return player.HandleCommand(command.lower(), param, bot, self)
-        return None
+                response = player.HandleCommand(command.lower(), param, self)
+                if response is not None:
+                    self.Send(nick, response)
 
-    def HandleCommand(self, command, source, nick, param, bot):
+    def HandleCommand(self, command, source, nick, param):
 
         command = command.lower()
 
@@ -89,63 +103,50 @@ class MafiaBot:
         if command == 'abort':
             # leave active channels
             for chn in self.mafiachannels:
-                bot.part(chn)
-            bot.part(self.deadchat)
+                self.LeaveChannel(chn)
+            self.LeaveChannel(self.deadchat)
             self.ResetGame()
             # rejoin new channels and set silent mode for mafia channels
             for chn in self.mafiachannels:
-                bot.join(chn)
-                bot.write(('MODE ', chn+' +s'))
-            bot.join(self.deadchat)
-            return None
+                self.JoinChannel(chn)
+                self.Action('MODE ', chn+' +s')
+            self.JoinChannel(self.deadchat)
 
         elif command == 'deadchat':
             if self.active:
-                return "The deadchat is at "+self.deadchat
+                self.Send(source, "The deadchat is at "+self.deadchat)
 
         elif command == 'join':
             if not self.active and not self._isPlayer(nick):
                 if Identifier(nick) == 'NoLynch':
-                    return 'NoLynch is a restricted name and cannot be used. Please join under a different nickname.'
+                    self.Send(source, 'NoLynch is a restricted name and cannot be used. Please join under a different nickname.')
                 self[Identifier(nick)] = MafiaPlayer(Identifier(nick))
-                bot.msg(self.mainchannel, nick + ' has joined the game. There are currently '+str(len(self.players))+' Players in the game.')
-            return None
+                self.Send(self.mainchannel, nick + ' has joined the game. There are currently '+str(len(self.players))+' Players in the game.')
 
         elif command == 'drop':
             if not self.active and self._isPlayer(nick):
                 del self.players[Identifier(nick)]
-                bot.msg(self.mainchannel, nick + ' has dropped from the game. There are currently '+str(len(self.players))+' Players in the game.')
-            return None
+                self.Send(self.mainchannel, nick + ' has dropped from the game. There are currently '+str(len(self.players))+' Players in the game.')
 
         elif command == 'start':
-            return self.StartGame(bot)
+            self.Send(source, self.StartGame())
 
         elif command == 'vote':
             if self.active and self.phase == self.DAYPHASE and self._isPlayer(nick):
-                self.HandleVote(nick, param, bot)
-                return None
-            else:
-                return None
+                self.HandleVote(nick, param)
 
         elif command == 'nolynch':
             if self.active and self.phase == self.DAYPHASE and self._isPlayer(nick):
-                self.HandleVote(nick, 'NoLynch', bot)
-                return None
-            else:
-                return None
+                self.HandleVote(nick, 'NoLynch')
 
         elif command == 'unvote':
             if self.active and self._isPlayer(nick):
                 self.votes[Identifier(nick)] = (self.NOVOTE, time.clock())
-                self.PrintVotes(bot)
-                return None
-            else:
-                return None
+                self.PrintVotes()
 
         elif command == 'votes':
             if self.active and self.phase == self.DAYPHASE:
-                self.PrintVotes(bot)
-            return None
+                self.PrintVotes()
 
         elif command == 'time':
             if self.active and self.phase == self.DAYPHASE:
@@ -153,15 +154,13 @@ class MafiaBot:
                 hours = timepassed / 3600
                 minutes = (timepassed % 3600) / 60
                 seconds = timepassed % 60
-                return 'It has been '+str(hours).zfill(1)+':'+str(minutes).zfill(2)+':'+str(seconds).zfill(2)+' since the start of the day.'
-            return None
+                self.Send(source, 'It has been '+str(hours).zfill(1)+':'+str(minutes).zfill(2)+':'+str(seconds).zfill(2)+' since the start of the day.')
 
         elif command == 'players':
             if not self.players:
-                return 'No players active'
+                self.Send(source, 'No players active')
             else:
-                msg = 'Playerlist: ' + self.GetPlayers()
-                return msg
+                self.Send(source, 'Playerlist: ' + self.GetPlayers())
 
         elif command == 'kill':
             # check if message came from a mafia channel
@@ -173,7 +172,7 @@ class MafiaBot:
                     if not player.IsDead() and player.faction == MafiaPlayer.FACTION_MAFIA:
                         # check if there are kills left
                         if self.factionkills <= 0:
-                            return 'There are no faction kills left to be carried out tonight.'
+                            self.Send(source, 'There are no faction kills left to be carried out tonight.')
                         else:
                             # check if player exists, is alive
                             target = self._getPlayer(param)
@@ -182,11 +181,10 @@ class MafiaBot:
                                     # player can be killed, so we add the action
                                     self.actionlist.append(MafiaAction(MafiaAction.KILL, nick, param, True))
                                     self.factionkills -= 1
-                                    return nick+' will kill '+param+' tonight.'
+                                    self.Send(source, nick+' will kill '+param+' tonight.')
 
                             # couldn't find valid kill target
-                            return param + ' is not a player that can be killed!'
-            return None
+                            self.Send(source, param + ' is not a player that can be killed!')
 
         elif command == 'nokill':
             # check if message came from a mafia channel
@@ -198,48 +196,53 @@ class MafiaBot:
                     if not player.IsDead() and player.faction == MafiaPlayer.FACTION_MAFIA:
                         # check if there are kills left
                         if self.factionkills <= 0:
-                            return 'There are no faction kills left to be carried out tonight.'
+                            self.Send(source, 'There are no faction kills left to be carried out tonight.')
                         else:
                             # pass remaining kills
                             self.factionkills = 0
-                            return 'You forgo any outstanding faction kills for the night.'
+                            self.Send(source, 'You forgo any outstanding faction kills for the night.')
             return None
 
         elif command == 'phase':
             if self.active:
-                return 'It is currently '+self.PhaseStr[self.phase]+' on Day '+str(self.daycount)
-            return None
+                self.Send(source, 'It is currently '+self.PhaseStr[self.phase]+' on Day '+str(self.daycount))
 
         elif command == 'role':
-            if param.lower() in Roles:
-                return Roles[param.lower()].GetRoleDescription()
-            else:
-                return 'I do not know the role '+param
+            if param:
+                if param.lower() in Roles:
+                    self.Send(source, Roles[param.lower()].GetRoleDescription())
+                else:
+                    self.Send(source, 'I do not know the role '+param)
 
         elif command == 'item':
-            if param.lower() in Items:
-                return Items[param.lower()].ItemDescription()
-            else:
-                return 'I do not know the item '+param
+            if param:
+                if param.lower() in Items:
+                    self.Send(source, Items[param.lower()].ItemDescription())
+                else:
+                    self.Send(source, 'I do not know the item '+param)
 
         elif command == 'setup':
             if param == 'reset':
                 self.setup = MafiaSetup()
-                return "Reset setup!"
+                self.Send(source, "Reset setup!")
             else:
-                return self.setup.HandleCommand(nick, param, self)
+                self.Send(source, self.setup.HandleCommand(nick, param, self))
 
         elif command == 'roles':
             if self.active:
-                if not source == nick and not source == self.deadchat:
-                    return None
-                player = self._getPlayer(nick)
-                if player is not None:
-                    if not player.IsDead():
-                        return None
-                # it is save to reply
-                return 'The roles this game are - '+self.GetRoleList()
-            return None
+                safereply = False
+                if source == self.deadchat:
+                    safereply = True
+                elif source == nick:
+                    player = self._getPlayer(nick)
+                    if player is not None:
+                        if player.IsDead():
+                            safereply = True
+                    else:
+                        safereply = True
+                if safereply:
+                    # it is save to reply
+                    self.Send(source, 'The roles this game are - '+self.GetRoleList())
 
         elif command == 'dice':
             try:
@@ -247,19 +250,20 @@ class MafiaBot:
                 result = random.randint(1, limit)
                 if limit == 2:
                     if result == 1:
-                        return 'The coin comes up: Heads'
+                        self.Send(source, 'The coin comes up: Heads')
                     else:
-                        return 'The coin comes up: Tails'
+                        self.Send(source, 'The coin comes up: Tails')
                 else:
-                    return 'You roll a d%u, the result is a %u.' % (limit, result)
+                    self.Send(source, 'You roll a d%u, the result is a %u.' % (limit, result))
             except:
-                return None
+                pass
 
         # template
         elif command == '':
-            return None
+            pass
 
-        return "I do not currently know how to handle command "+command
+        else:
+            self.Send(source, "I do not currently know how to handle command "+command)
 
     def GetPlayers(self):
         players = []
@@ -291,7 +295,7 @@ class MafiaBot:
         else:
             return False
 
-    def HandleVote(self, nick, param, bot):
+    def HandleVote(self, nick, param):
         player = self._getPlayer(nick)
         # we know nick matches a player at this point
         if not player.IsDead():
@@ -311,12 +315,12 @@ class MafiaBot:
                     cnt += 1
             if cnt > len(self.votes)/2:
                 # majority
-                self.Lynch(param, bot)
+                self.Lynch(param)
             else:
                 # print current votes
-                self.PrintVotes(bot)
+                self.PrintVotes()
 
-    def PrintVotes(self, bot):
+    def PrintVotes(self):
         votecounter = {}
         for pair in self.votes.items():
             if pair[1][0] not in votecounter:
@@ -325,22 +329,22 @@ class MafiaBot:
         sortedvotelist = sorted(votecounter.items(), key=lambda x: -len(x[1]) if not x[0] == '' else 1)
         votestr = ' - '.join(['\x02%s (%u)\x02: %s' % (target if not target == '' else 'No Vote', len(votelist), ', '.join([voter[0] for voter in sorted(votelist, key=lambda x: x[1])])) for target, votelist in sortedvotelist])
         msg = 'Current Votes - %s - \x02%s\x02 votes required for a lynch.' % (votestr, len(self.votes)/2 + 1)
-        bot.msg(self.mainchannel, msg, max_messages=10)
+        self.Send(self.mainchannel, msg, max_messages=10)
 
-    def Lynch(self, nick, bot):
+    def Lynch(self, nick):
         if nick == 'NoLynch':
-            bot.msg(self.mainchannel, 'The town decides not to lynch anybody today.', max_messages=10)
+            self.Send(self.mainchannel, 'The town decides not to lynch anybody today.', max_messages=10)
         else:
             player = self._getPlayer(nick)
-            killok, playerflip = player.Kill(self, bot, False)
+            killok, playerflip = player.Kill(self, False)
             if killok:
-                bot.msg(self.mainchannel, nick+playerflip+' was lynched today!', max_messages=10)
-        if not self.CheckForWinCondition(bot):
-            self.BeginNightPhase(bot)
+                self.Send(self.mainchannel, nick+playerflip+' was lynched today!', max_messages=10)
+        if not self.CheckForWinCondition():
+            self.BeginNightPhase()
         else:
             self.ResetGame()
 
-    def CheckForWinCondition(self, bot):
+    def CheckForWinCondition(self):
         # check for victory condition
         townwin = True
         specialwin = False
@@ -386,24 +390,24 @@ class MafiaBot:
             # get town players and prepare win message
             townies = [nick for nick, player in self.players.items() if player.faction == MafiaPlayer.FACTION_TOWN]
             playerstr = ', '.join(townies)
-            bot.msg(self.mainchannel, 'Town wins this game! Congratulations to '+playerstr, max_messages=10)
-            bot.msg(self.mainchannel, 'The roles this game were - '+self.GetRoleList(), max_messages=10)
+            self.Send(self.mainchannel, 'Town wins this game! Congratulations to '+playerstr, max_messages=10)
+            self.Send(self.mainchannel, 'The roles this game were - '+self.GetRoleList(), max_messages=10)
 
         elif specialwin:
             self.active = False
-            specialwinner.SpecialWin(specialwinner, self, bot)
+            specialwinner.SpecialWin(specialwinner, self)
 
         elif mafiawin:
             self.active = False
             # get mafia players and prepare win message
             mafia = [nick for nick, player in self.players.items() if (player.faction == MafiaPlayer.FACTION_MAFIA or player.faction == MafiaPlayer.FACTION_MAFIATRAITOR)]
             playerstr = ', '.join(mafia)
-            bot.msg(self.mainchannel, 'Mafia wins this game! Congratulations to '+playerstr, max_messages=10)
-            bot.msg(self.mainchannel, 'The roles this game were - '+self.GetRoleList(), max_messages=10)
+            self.Send(self.mainchannel, 'Mafia wins this game! Congratulations to '+playerstr, max_messages=10)
+            self.Send(self.mainchannel, 'The roles this game were - '+self.GetRoleList(), max_messages=10)
 
         return mafiawin or townwin or specialwin
 
-    def StartGame(self, bot):
+    def StartGame(self):
         # check if the right number of players are in the game
         requiredplayers = self.setup.GetRequiredPlayers()
         if requiredplayers is None:
@@ -411,7 +415,7 @@ class MafiaBot:
         if requiredplayers > 0:
             if not len(self.players) == requiredplayers:
                 return 'This setup requires '+str(requiredplayers)+' players. There are currenty '+str(len(self.players))+' players signed up for the game.'
-        bot.msg(self.mainchannel, 'The game is starting!')
+        self.Send(self.mainchannel, 'The game is starting!')
         self.active = True
         self.time = time.clock()
         self.votes = dict()
@@ -422,13 +426,13 @@ class MafiaBot:
             player.dead = False
             self.votes[Identifier(nick)] = (self.NOVOTE, time.clock())
             # send role PM to all of the players
-            bot.msg(nick, player.GetRolePM())
+            self.Send(nick, player.GetRolePM())
             if player.role is not None:
-                player.role.StartGame(bot, player, self)
+                player.role.StartGame(player, self)
         if self.setup.GetDaystart():
-            bot.msg(self.mainchannel, 'It is now day 0.')
+            self.Send(self.mainchannel, 'It is now day 0.')
         else:
-            self.BeginNightPhase(bot)
+            self.BeginNightPhase()
         return None
 
     def AssignRoles(self):
@@ -454,7 +458,7 @@ class MafiaBot:
                     player.role = MafiaRole()
             i += 1
 
-    def HandleActionList(self, bot):
+    def HandleActionList(self):
         # shuffle action list so there's no information to be gathered from multiple events happening in the same night
         random.shuffle(self.actionlist)
 
@@ -484,7 +488,7 @@ class MafiaBot:
         copchecks = [action for action in self.actionlist if action.actiontype == MafiaAction.CHECKFACTION]
         for check in copchecks:
             if Identifier(check.source) in blockset:
-                bot.msg(check.source, 'You were blocked tonight.')
+                self.Send(check.source, 'You were blocked tonight.')
             else:
                 faction = self._getPlayer(check.target).GetFaction()
                 if 'sanity' in check.modifiers:
@@ -505,18 +509,18 @@ class MafiaBot:
                         else:
                             faction = 'Mafia'
 
-                bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to be aligned with '+faction+'.')
+                self.Send(check.source, 'Your investigation on '+str(check.target)+' reveals him to be aligned with '+faction+'.')
 
         # handle item receptions
         itemsends = [action for action in self.actionlist if action.actiontype == MafiaAction.SENDITEM and Identifier(action.source) not in blockset]
         for send in itemsends:
-            self._getPlayer(send.target).ReceiveItem(send.modifiers['item'], bot, self)
+            self._getPlayer(send.target).ReceiveItem(send.modifiers['item'], self)
 
         # handle role investigations
         rolecopchecks = [action for action in self.actionlist if action.actiontype == MafiaAction.CHECKROLE]
         for check in rolecopchecks:
             if Identifier(check.source) in blockset:
-                bot.msg(check.source, 'You were blocked tonight.')
+                self.Send(check.source, 'You were blocked tonight.')
             else:
                 if self._getPlayer(check.target).role is not None:
                     rolename = self._getPlayer(check.target).role.GetRoleName()
@@ -524,33 +528,33 @@ class MafiaBot:
                         rolename = 'Vanilla'
                     else:
                         rolename = 'a '+rolename
-                    bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to be '+rolename+'.')
+                    self.Send(check.source, 'Your investigation on '+str(check.target)+' reveals him to be '+rolename+'.')
                 else:
-                    bot.msg(check.source, 'Your investigation on '+str(check.target)+' reveals him to not have a role at all. Strange.')
+                    self.Send(check.source, 'Your investigation on '+str(check.target)+' reveals him to not have a role at all. Strange.')
 
         # handle trackings
         tracks = [action for action in self.actionlist if action.actiontype == MafiaAction.TRACK]
         for track in tracks:
             if Identifier(track.source) in blockset:
-                bot.msg(track.source, 'You were blocked tonight.')
+                self.Send(track.source, 'You were blocked tonight.')
             else:
                 visits = [Identifier(action.target) for action in self.actionlist if (Identifier(action.source) == Identifier(track.target) and action.visiting and (action.actiontype == MafiaAction.BLOCK or Identifier(action.source) not in blockset))]
                 if visits:
-                    bot.msg(track.source, str(track.target)+' visited the following players tonight: '+', '.join(visits))
+                    self.Send(track.source, str(track.target)+' visited the following players tonight: '+', '.join(visits))
                 else:
-                    bot.msg(track.source, str(track.target)+' did not visit anybody tonight.')
+                    self.Send(track.source, str(track.target)+' did not visit anybody tonight.')
                     
         # handle watches
         watchs = [action for action in self.actionlist if action.actiontype == MafiaAction.WATCH]
         for watch in watchs:
             if Identifier(watch.source) in blockset:
-                bot.msg(watch.source, 'You were blocked tonight.')
+                self.Send(watch.source, 'You were blocked tonight.')
             else:
                 visits = [Identifier(action.source) for action in self.actionlist if (Identifier(action.target) == Identifier(watch.target) and not Identifier(action.source) == Identifier(watch.source) and action.visiting and (action.actiontype == MafiaAction.BLOCK or Identifier(action.source) not in blockset))]
                 if visits:
-                    bot.msg(watch.source, str(watch.target)+' was visited by the following players tonight: '+', '.join(visits))
+                    self.Send(watch.source, str(watch.target)+' was visited by the following players tonight: '+', '.join(visits))
                 else:
-                    bot.msg(watch.source, str(watch.target)+' was not visited tonight.')
+                    self.Send(watch.source, str(watch.target)+' was not visited tonight.')
 
         # handle callback actions
         callbacks = [action for action in self.actionlist if action.actiontype == MafiaAction.CALLBACK]
@@ -559,7 +563,7 @@ class MafiaBot:
                 blocked = True
             else:
                 blocked = False
-            callback.modifiers['callback'](Identifier(callback.source), bot, self, blocked)
+            callback.modifiers['callback'](Identifier(callback.source), self, blocked)
 
         # handle kill actions
         nokills = True
@@ -572,16 +576,16 @@ class MafiaBot:
                     protectdict[Identifier(kill.target)] -= 1
                     skip = True
             if not skip:
-                killstatus, flipmsg = self._getPlayer(kill.target).Kill(self, bot, True)
+                killstatus, flipmsg = self._getPlayer(kill.target).Kill(self, True)
                 if killstatus:
                     nokills = False
-                    bot.msg(self.mainchannel, kill.target+flipmsg+' has died tonight!', max_messages=10)
+                    self.Send(self.mainchannel, kill.target+flipmsg+' has died tonight!', max_messages=10)
         if nokills:
-            bot.msg(self.mainchannel, 'Nobody has died tonight!', max_messages=10)
+            self.Send(self.mainchannel, 'Nobody has died tonight!', max_messages=10)
         # reset actionlist
         self.actionlist = []
         # send history to deadchat
-        bot.msg(self.deadchat, nighthistory, max_messages=10)
+        self.Send(self.deadchat, nighthistory, max_messages=10)
 
     def GetRoleList(self):
         retstr = ''
@@ -601,18 +605,18 @@ class MafiaBot:
             retstr += '\x02' + str(player.name) + '\x02' + deadstr + ': ' + factionstr + ' ' + rolestr + '  '
         return retstr.rstrip()
 
-    def BeginNightPhase(self, bot):
+    def BeginNightPhase(self):
         self.daycount += 1
         self.phase = self.NIGHTPHASE
-        bot.msg(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.')
+        self.Send(self.mainchannel, 'Night '+str(self.daycount)+' has started. Go to sleep and take required actions.')
         self.votes = dict()
         for nick, player in self.players.items():
             if not player.IsDead():
                 self.votes[Identifier(nick)] = (self.NOVOTE, time.clock())
-                player.BeginNightPhase(self, bot)
+                player.BeginNightPhase(self)
         self.factionkills = self.GetNightKillPower()
         for mafiach in self.mafiachannels:
-            bot.msg(mafiach, 'You have '+str(self.factionkills)+' kills tonight. Use !kill <target> to use them. The player issuing the command will carry out the kill. Use !nokill to pass on the remaining faction kills for the night.')
+            self.Send(mafiach, 'You have '+str(self.factionkills)+' kills tonight. Use !kill <target> to use them. The player issuing the command will carry out the kill. Use !nokill to pass on the remaining faction kills for the night.')
 
     def GetNightKillPower(self):
         if self.setup.killpowerreduction is not None:
@@ -636,13 +640,13 @@ class MafiaBot:
         return self.setup.mafiakillpower
 
     # called every 5 seconds
-    def GameLoop(self, bot):
+    def GameLoop(self):
         if self.joinchannels:
             for chn in self.mafiachannels:
-                bot.join(chn)
-                bot.write(('MODE ', chn+' +s'))
-            bot.join(self.deadchat)
-            bot.join(self.mainchannel)
+                self.JoinChannel(chn)
+                self.Action('MODE ', chn+' +s')
+            self.JoinChannel(self.deadchat)
+            self.JoinChannel(self.mainchannel)
             self.joinchannels = False
 
         if self.active and (self.phase == self.NIGHTPHASE):
@@ -656,8 +660,8 @@ class MafiaBot:
             if self.factionkills > 0:
                 requiredactions = True
             if not requiredactions:
-                self.HandleActionList(bot)
-                if not self.CheckForWinCondition(bot):
+                self.HandleActionList()
+                if not self.CheckForWinCondition():
                     self.phase = self.DAYPHASE
                     self.time = time.clock()
                     # reset votes
@@ -665,6 +669,6 @@ class MafiaBot:
                     for nick, player in self.players.items():
                         if not player.IsDead():
                             self.votes[Identifier(nick)] = (self.NOVOTE, time.clock())
-                    bot.msg(self.mainchannel, 'Day '+str(self.daycount)+' has just begun. The Town consists of '+self.GetPlayers())
+                    self.Send(self.mainchannel, 'Day '+str(self.daycount)+' has just begun. The Town consists of '+self.GetPlayers())
                 else:
                     self.ResetGame()

@@ -19,7 +19,7 @@ class Nurse(MafiaRole):
     def GetRoleDescription():
         return 'Nurses hand out syringes to other players at night. They can be used to protect any player from a night kill.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'send':
                 if not self.limiteduses == 0:
@@ -41,7 +41,7 @@ class Nurse(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Nurse: You may send another player a syringe tonight. Use !send <player> to give a syringe to that player.'

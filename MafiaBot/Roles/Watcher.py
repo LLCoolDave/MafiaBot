@@ -19,7 +19,7 @@ class Watcher(MafiaRole):
     def GetRoleDescription():
         return 'Watchers observe other players\' homes at night. They will receive a report with all the players visiting their target that night. They themselves can be followed to their target.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'watch':
                 if not self.limiteduses == 0:
@@ -41,7 +41,7 @@ class Watcher(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Watcher: You may observe another player tonight. Use !watch <player> to take camp outside their house.'

@@ -21,7 +21,7 @@ class FakeGun(MafiaItem):
     def ItemDescription():
         return 'Fake guns disguise themselves as real guns. If they are fired during the night, they backfire and kill their owner instead.'
 
-    def HandleCommand(self, param, player, bot, mb):
+    def HandleCommand(self, param, player, mb):
         if self.requiredaction:
             target = Identifier(param)
             if target in mb.players:
@@ -36,6 +36,6 @@ class FakeGun(MafiaItem):
             return False, 'Cannot find player '+param
         return False, None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         self.requiredaction = True
         return 'Gun: You may fire your gun '+self.name+' received on night '+str(self.receiveday)+' to kill another player. To do so, use !use '+self.name+' <target>.'

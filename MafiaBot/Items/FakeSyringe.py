@@ -21,7 +21,7 @@ class FakeSyringe(MafiaItem):
     def ItemDescription():
         return 'Fake Syringes pretend to provide protection to a player during the night. In reality, they are a mere placebo and accomplish nothing.'
 
-    def HandleCommand(self, param, player, bot, mb):
+    def HandleCommand(self, param, player, mb):
         if self.requiredaction:
             target = Identifier(param)
             if target in mb.players:
@@ -32,6 +32,6 @@ class FakeSyringe(MafiaItem):
             return False, 'Cannot find player '+param
         return False, None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         self.requiredaction = True
         return 'Syringe: You may use your syringe '+self.name+' received on night '+str(self.receiveday)+' to protect a player. To do so, use !use '+self.name+' <target>.'

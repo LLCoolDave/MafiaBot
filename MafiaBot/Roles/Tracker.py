@@ -19,7 +19,7 @@ class Tracker(MafiaRole):
     def GetRoleDescription():
         return 'Trackers follow other players at night. They will receive a report with all the players visited by their target that night. They themselves can be followed to their target.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'track':
                 if not self.limiteduses == 0:
@@ -41,7 +41,7 @@ class Tracker(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Tracker: You may follow another player tonight. Use !track <player> to track that player.'

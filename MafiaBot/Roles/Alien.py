@@ -17,7 +17,7 @@ class Alien(MafiaRole):
     def GetRoleDescription():
         return 'Aliens probe other players at night. Once they have probed all other living players, they win the game.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if command == 'probes':
             # get all other probed players
             probed = [str(pl.name) for pl in mb.players.values() if (pl.IsProbed() and not pl.IsDead() and pl is not player)]
@@ -39,7 +39,7 @@ class Alien(MafiaRole):
                     return 'Cannot find player '+param
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         self.requiredaction = True
         return 'Alien: You may probe another player tonight. Use !visit <player> to probe that player.'
 
@@ -51,11 +51,11 @@ class Alien(MafiaRole):
         else:
             return True
 
-    def SpecialWin(self, winner, mb, bot):
-        bot.msg(mb.mainchannel, 'The Alien wins this game! Congratulations to '+str(winner.name), max_messages=10)
-        bot.msg(mb.mainchannel, 'The roles this game were - '+mb.GetRoleList(), max_messages=10)
+    def SpecialWin(self, winner, mb):
+        mb.Send(mb.mainchannel, 'The Alien wins this game! Congratulations to '+str(winner.name), max_messages=10)
+        mb.Send(mb.mainchannel, 'The roles this game were - '+mb.GetRoleList(), max_messages=10)
 
-    def StartGame(self, bot, player, mafiabot):
+    def StartGame(self, player, mafiabot):
         # hand probe to self. Makes checking for victory a lot easier
         player.items['probe1'] = Probe('probe1', 0)
 

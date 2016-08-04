@@ -23,7 +23,7 @@ class Jailer(MafiaRole):
     def GetRoleDescription():
         return 'Jailers are combined prostitutes and medics. They disable the active abilities of another player at night while also protecting them from one night kill. Roleblocks do not interfer with each other, but prevent all other actions by the blocked player. A jailer may not pick the same player on two consecutive nights.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'block' or command == 'protect':
                 if not self.limiteduses == 0:
@@ -51,7 +51,7 @@ class Jailer(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Jailer: You may roleblock and protect another player tonight. Use !block <player> or !protect <player> to jail that player.'

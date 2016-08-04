@@ -19,7 +19,7 @@ class CorruptBureaucrat(MafiaRole):
     def GetRoleDescription():
         return 'Corrupt Bureaucrat can request a list of all active roles going into a night.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'check':
                 if not self.limiteduses == 0:
@@ -33,7 +33,7 @@ class CorruptBureaucrat(MafiaRole):
                     return ret
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Corrupt Bureaucrat: You may request a list of all active roles tonight. Use !check to use your power.'
@@ -43,7 +43,7 @@ class CorruptBureaucrat(MafiaRole):
         else:
             return ''
 
-    def ReceiveRoleList(self, source, bot, mafiabot, blocked):
+    def ReceiveRoleList(self, source, mafiabot, blocked):
         if not blocked:
             rolelist = []
             for player in mafiabot.players.values():
@@ -55,4 +55,4 @@ class CorruptBureaucrat(MafiaRole):
                     if not (rolestr == 'Goon' or rolestr == 'Civilian' or rolestr == 'Traitor' or rolestr == 'None'):
                         rolelist.append(rolestr)
             random.shuffle(rolelist)
-            bot.msg(source, 'The following roles were alive going into the night: '+', '.join(rolelist), max_messages=10)
+            mafiabot.Send(source, 'The following roles were alive going into the night: '+', '.join(rolelist), max_messages=10)

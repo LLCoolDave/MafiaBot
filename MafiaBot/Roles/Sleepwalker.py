@@ -19,7 +19,7 @@ class Sleepwalker(MafiaRole):
     def GetRoleDescription():
         return 'Sleepwalkers compulsorily visit other players at night. That action accomplishes nothing.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'visit':
                 if not self.limiteduses == 0:
@@ -41,7 +41,7 @@ class Sleepwalker(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             self.mandatoryaction = True

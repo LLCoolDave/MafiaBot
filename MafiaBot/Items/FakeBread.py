@@ -22,8 +22,8 @@ class FakeBread(MafiaItem):
     def ItemDescription():
         return 'Fake bread does nothing. It doesn\'t even confuse players as there is no real bread it could be mistaken for. A curious item indeed.'
 
-    def HandleCommand(self, param, player, bot, mb):
+    def HandleCommand(self, param, player, mb):
         return False, None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         return ''

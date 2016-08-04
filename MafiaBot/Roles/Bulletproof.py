@@ -15,5 +15,5 @@ class Bulletproof(MafiaRole):
     def GetRoleDescription():
         return 'Bulletproofs have no special abilities, but start the game with one bulletproof vest. It protects them from one night kill and is then consumed.'
 
-    def StartGame(self, bot, player, mafiabot):
+    def StartGame(self, player, mafiabot):
         player.items['vest1'] = BulletproofVest('vest1', 0)

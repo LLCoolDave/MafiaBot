@@ -23,23 +23,23 @@ class MafiaRole(object):
     def GetRoleDescription():
         return 'There is currently no description for this role.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         return ''
 
     def NightKillPower(self):
         return 0
 
-    def Kill(self, bot, mafiabot):
+    def Kill(self, mafiabot):
         pass
 
-    def StartGame(self, bot, player, mafiabot):
+    def StartGame(self, player, mafiabot):
         pass
 
     def CheckSpecialWinCondition(self, mb):
         return False
 
-    def SpecialWin(self, winner, mb, bot):
+    def SpecialWin(self, winner, mb):
         pass

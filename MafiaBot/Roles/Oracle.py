@@ -23,7 +23,7 @@ class Oracle(MafiaRole):
     def GetRoleDescription():
         return 'Oracles pick other players at night. If they die, the faction and role of their last picked target will be revealed.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'pick':
                 if not self.limiteduses == 0:
@@ -45,7 +45,7 @@ class Oracle(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Oracle: You may pick another player tonight. Use !pick <player> to pick that player.'
@@ -55,10 +55,10 @@ class Oracle(MafiaRole):
         else:
             return ''
 
-    def Kill(self, bot, mafiabot):
+    def Kill(self, mafiabot):
         if self.target is not None:
             if mafiabot.players[self.target].role is not None:
                 rolestr = ' '+mafiabot.players[self.target].role.GetRoleName()
             else:
                 rolestr = ''
-            bot.msg(mafiabot.mainchannel, 'The oracle reveals that '+str(self.target)+' is a '+mafiabot.players[self.target].GetFaction()+rolestr+'.')
+            mafiabot.Send.msg(mafiabot.mainchannel, 'The oracle reveals that '+str(self.target)+' is a '+mafiabot.players[self.target].GetFaction()+rolestr+'.')

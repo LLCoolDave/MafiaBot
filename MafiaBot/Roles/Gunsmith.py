@@ -19,7 +19,7 @@ class Gunsmith(MafiaRole):
     def GetRoleDescription():
         return 'Gunsmiths hand out guns to other players at night. These guns can then be used to carry out night kills.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'send':
                 if not self.limiteduses == 0:
@@ -41,7 +41,7 @@ class Gunsmith(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Gunsmith: You may send another player a gun tonight. Use !send <player> to give a gun to that player.'

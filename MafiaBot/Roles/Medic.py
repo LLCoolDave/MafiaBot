@@ -23,7 +23,7 @@ class Medic(MafiaRole):
     def GetRoleDescription():
         return 'Medics protect players from night kills. A medic may protect himself, but he may not pick the same player on two consecutive nights.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'protect':
                 if not self.limiteduses == 0:
@@ -50,7 +50,7 @@ class Medic(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Medic: You may protect a player tonight. Use !protect <player> to protect that player.'

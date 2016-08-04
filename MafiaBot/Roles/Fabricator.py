@@ -19,7 +19,7 @@ class Fabricator(MafiaRole):
     def GetRoleDescription():
         return 'Fabricators hand out fake items to other players at night. The possible items are: Background Check, Bulletproof Vest, Gun, Syringe, Bread'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'send':
                 if not self.limiteduses == 0:
@@ -57,7 +57,7 @@ class Fabricator(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Fabricator: You may send another player a fake item tonight. Use !send <player> <bread/check/gun/syringe/vest> to give that item to that player.'

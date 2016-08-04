@@ -26,7 +26,7 @@ class Cop(MafiaRole):
     def GetRoleDescription():
         return 'Cops investigate other players at night. They will receive a report with that players faction alignment at the end of the night.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'check':
                 if not self.limiteduses == 0:
@@ -48,7 +48,7 @@ class Cop(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Cop: You may check another player\'s alignment tonight. Use !check <player> to investigate that player.'

@@ -21,8 +21,8 @@ class FakeVest(MafiaItem):
     def ItemDescription():
         return 'Fake bulletproof vests pretend to protect their owners. In reality, they do nothing at all.'
 
-    def HandleCommand(self, param, player, bot, mb):
+    def HandleCommand(self, param, player, mb):
         return False, None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         return ''

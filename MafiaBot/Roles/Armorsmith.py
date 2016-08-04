@@ -19,7 +19,7 @@ class Armorsmith(MafiaRole):
     def GetRoleDescription():
         return 'Armorsmiths hand out bulletproof vests to other players at night. These vests protect their owner from a night kills.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param,  mb, player):
         if self.requiredaction:
             if command == 'send':
                 if not self.limiteduses == 0:
@@ -41,7 +41,7 @@ class Armorsmith(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Armorsmith: You may send another player a bulletproof vest tonight. Use !send <player> to give a vest to that player.'

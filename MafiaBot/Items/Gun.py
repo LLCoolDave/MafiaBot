@@ -20,7 +20,7 @@ class Gun(MafiaItem):
     def ItemDescription():
         return 'Guns provide a night kill to their owner. They can be fire alongside other night actions, but at most one gun may be used by each player each night.'
 
-    def HandleCommand(self, param, player, bot, mb):
+    def HandleCommand(self, param, player, mb):
         if self.requiredaction:
             target = Identifier(param)
             if target in mb.players:
@@ -35,6 +35,6 @@ class Gun(MafiaItem):
             return False, 'Cannot find player '+param
         return False, None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         self.requiredaction = True
         return 'Gun: You may fire your gun '+self.name+' received on night '+str(self.receiveday)+' to kill another player. To do so, use !use '+self.name+' <target>.'

@@ -19,7 +19,7 @@ class RoleCop(MafiaRole):
     def GetRoleDescription():
         return 'Role Cops investigate other players at night. They will receive a report with that players role at the end of the night.'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'check':
                 if not self.limiteduses == 0:
@@ -41,7 +41,7 @@ class RoleCop(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Role Cop: You may check another player\'s role tonight. Use !check <player> to investigate that player.'

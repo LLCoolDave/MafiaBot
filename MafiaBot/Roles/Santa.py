@@ -20,7 +20,7 @@ class Santa(MafiaRole):
     def GetRoleDescription():
         return 'Santas hand out random items to other players at night. The possible items are: Background Check, Bulletproof Vest, Gun, Syringe'
 
-    def HandleCommand(self, command, param, bot, mb, player):
+    def HandleCommand(self, command, param, mb, player):
         if self.requiredaction:
             if command == 'send':
                 if not self.limiteduses == 0:
@@ -53,7 +53,7 @@ class Santa(MafiaRole):
 
         return None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         if not self.limiteduses == 0:
             self.requiredaction = True
             ret = 'Santa: You may send another player a present tonight. Use !send <player> to give a random item to that player.'

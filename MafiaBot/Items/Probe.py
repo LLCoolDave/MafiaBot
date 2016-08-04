@@ -21,8 +21,8 @@ class Probe(MafiaItem):
     def ItemDescription():
         return 'Probes are handed out by Aliens. Players do not know if and when they are probed. Once all non-Aliens alive in the game are probed, the Alien wins the game.'
 
-    def HandleCommand(self, param, player, bot, mb):
+    def HandleCommand(self, param, player, mb):
         return False, None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         return ''

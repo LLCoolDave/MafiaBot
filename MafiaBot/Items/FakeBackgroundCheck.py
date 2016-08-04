@@ -21,7 +21,7 @@ class FakeBackgroundCheck(MafiaItem):
     def ItemDescription():
         return 'Fake background checks pretend to provide a faction investigation to their owner. In reality, they always give a \'Town\' result.'
 
-    def HandleCommand(self, param, player, bot, mb):
+    def HandleCommand(self, param, player, mb):
         if self.requiredaction:
             target = Identifier(param)
             if target in mb.players:
@@ -36,6 +36,6 @@ class FakeBackgroundCheck(MafiaItem):
             return False, 'Cannot find player '+param
         return False, None
 
-    def BeginNightPhase(self, mb, player, bot):
+    def BeginNightPhase(self, mb, player):
         self.requiredaction = True
         return 'Background Check: You may use your check '+self.name+' received on night '+str(self.receiveday)+' to investigate another player. To do so, use !use '+self.name+' <target>.'
