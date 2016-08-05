@@ -1,5 +1,7 @@
 __author__ = 'LLCoolDave'
 
+# ToDo: Replace by proper unit tests, currently broken as it stands
+
 import logging
 from MafiaBot.MafiaBot import *
 from sopel.tools import Identifier

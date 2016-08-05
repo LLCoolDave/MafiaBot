@@ -1,3 +1,5 @@
+# ToDo: Replace by proper unit tests, currently broken as it stands
+
 import logging
 from ResistanceBot.ResistanceBot import *
 from sopel.tools import Identifier
