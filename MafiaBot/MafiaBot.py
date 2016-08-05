@@ -6,6 +6,7 @@ from .MafiaRole import MafiaRole
 from .Roles.rolelist import Roles
 from .Items.itemlist import Items
 from .MafiaSetup import MafiaSetup
+from .Communication import CommunicationActions as CA
 
 
 class MafiaBot:
@@ -49,17 +50,11 @@ class MafiaBot:
         self.players[key] = value
 
     def Send(self, target, message, **kwargs):
-        if message is not None:
+        if message:
             self.communication.send(target, message, **kwargs)
 
-    def Action(self, *varargs):
-        self.communication.action(*varargs)
-
-    def JoinChannel(self, channel):
-        self.communication.join(channel)
-
-    def LeaveChannel(self, channel):
-        self.communication.leave(channel)
+    def Action(self, target, action, *varargs, **kwargs):
+        self.communication.action(target, action, *varargs, **kwargs)
 
     def GetPlayer(self, name):
         try:
@@ -85,6 +80,8 @@ class MafiaBot:
         self.factionkills = 0
         self.setup = MafiaSetup()
         self.time = time.clock()
+        self.Action(None, CA.RESETALL)
+        self.Action(None, CA.SETSTATUS, 'Pregame')
 
     def HandlePlayerCommand(self, command, nick, param):
         player = self.GetPlayer(nick)
@@ -103,14 +100,14 @@ class MafiaBot:
         if command == 'abort':
             # leave active channels
             for chn in self.mafiachannels:
-                self.LeaveChannel(chn)
-            self.LeaveChannel(self.deadchat)
+                self.Action(chn, CA.LEAVE)
+            self.Action(self.deadchat, CA.LEAVE)
             self.ResetGame()
             # rejoin new channels and set silent mode for mafia channels
             for chn in self.mafiachannels:
-                self.JoinChannel(chn)
-                self.Action('MODE ', str(chn) + ' +s')
-            self.JoinChannel(self.deadchat)
+                self.Action(chn, CA.JOIN)
+                self.Action(chn, CA.HIDDEN)
+            self.Action(self.deadchat, CA.JOIN)
 
         elif command == 'deadchat':
             if self.active:
@@ -121,13 +118,16 @@ class MafiaBot:
                 if nick.lower() == 'nolynch':
                     self.Send(source, 'NoLynch is a restricted name and cannot be used. Please join under a different nickname.')
                     return
-                self[self.communication.get_id(nick)] = MafiaPlayer(str(nick))
+                newplayer = MafiaPlayer(str(nick))
+                self[self.communication.get_id(nick)] = newplayer
                 self.Send(self.mainchannel, nick + ' has joined the game. There are currently '+str(len(self.players))+' Players in the game.')
+                self.Action(newplayer, CA.SETPLAYING)
 
         elif command == 'drop':
             if not self.active and self._isPlayer(nick):
                 del self.players[self.communication.get_id(nick)]
                 self.Send(self.mainchannel, nick + ' has dropped from the game. There are currently '+str(len(self.players))+' Players in the game.')
+                self.Action(nick, CA.RESET)
 
         elif command == 'start':
             self.Send(source, self.StartGame())
@@ -203,7 +203,7 @@ class MafiaBot:
                             # pass remaining kills
                             self.factionkills = 0
                             self.Send(source, 'You forgo any outstanding faction kills for the night.')
-            return None
+            return
 
         elif command == 'phase':
             if self.active:
@@ -448,6 +448,7 @@ class MafiaBot:
             # set faction
             player.faction = rolelist[i][0]
             if player.faction == MafiaPlayer.FACTION_MAFIA:
+                self.Action(player, CA.SETMAFIA)
                 player.mafiachannel = self.mafiachannels[0]
                 player.preventtownvictory = True
             elif player.faction == MafiaPlayer.FACTION_THIRDPARTY:
@@ -621,6 +622,7 @@ class MafiaBot:
         self.factionkills = self.GetNightKillPower()
         for mafiach in self.mafiachannels:
             self.Send(mafiach, 'You have '+str(self.factionkills)+' kills tonight. Use !kill <target> to use them. The player issuing the command will carry out the kill. Use !nokill to pass on the remaining faction kills for the night.')
+        self.Action(None, CA.SETSTATUS, 'Night %u' % self.daycount)
 
     def GetNightKillPower(self):
         if self.setup.killpowerreduction is not None:
@@ -647,10 +649,10 @@ class MafiaBot:
     def GameLoop(self):
         if self.joinchannels:
             for chn in self.mafiachannels:
-                self.JoinChannel(chn)
-                self.Action('MODE ', str(chn) + ' +s')
-            self.JoinChannel(self.deadchat)
-            self.JoinChannel(self.mainchannel)
+                self.Action(chn, CA.JOIN)
+                self.Action(chn, CA.HIDDEN)
+            self.Action(self.deadchat, CA.JOIN)
+            self.Action(self.mainchannel, CA.JOIN)
             self.joinchannels = False
 
         if self.active and (self.phase == self.NIGHTPHASE):
@@ -674,5 +676,6 @@ class MafiaBot:
                         if not player.IsDead():
                             self.votes[player] = (self.NOVOTE, time.clock())
                     self.Send(self.mainchannel, 'Day '+str(self.daycount)+' has just begun. The Town consists of '+self.GetPlayers())
+                    self.Action(None, CA.SETSTATUS, 'Day %u' % self.daycount)
                 else:
                     self.ResetGame()

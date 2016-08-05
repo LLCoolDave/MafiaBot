@@ -7,16 +7,23 @@ import os
 client = discord.Client()
 mb = None
 
+approved_channels = ['gamechat', 'deadchat', 'mafia']
+
 
 @client.event
 async def on_ready():
     global mb
     mb = MafiaBot(DiscordCommunication(client))
+    await mb.communication.process_queue()
     print('Connected to Discord')
 
 
 @client.event
 async def on_message(message):
+    # filter out messages that are from channels the bot is not supposed to partake in
+    if not message.channel.is_private and message.channel.name not in approved_channels:
+        return
+
     if mb is not None:
         something_happend = False
         if message.content.startswith('!'):

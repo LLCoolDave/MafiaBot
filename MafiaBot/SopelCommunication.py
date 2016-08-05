@@ -1,6 +1,7 @@
 from sopel.tools import Identifier
 from .MafiaPlayer import MafiaPlayer
 import random
+from .Communication import CommunicationActions as CA
 
 
 class SopelCommunication(object):
@@ -13,14 +14,13 @@ class SopelCommunication(object):
             target = target.name
         self.bot.msg(Identifier(target), message, **kwargs)
 
-    def action(self, *varargs):
-        self.bot.write(tuple(*varargs))
-
-    def join(self, channel):
-        self.bot.join(channel)
-
-    def leave(self, channel):
-        self.bot.part(channel)
+    def action(self, target, action, *varargs, **kwargs):
+        if action == CA.HIDDEN:
+            self.bot.write('MODE ', str(target) + ' +s')
+        elif action == CA.JOIN:
+            self.bot.join(target)
+        elif action == CA.LEAVE:
+            self.bot.part(target)
 
     def get_id(self, name):
         return str(name).lower()

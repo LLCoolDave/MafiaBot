@@ -1,5 +1,6 @@
 from .MafiaItem import MafiaItem
 from .Items.itemlist import Items
+from .Communication import CommunicationActions as CA
 
 
 class MafiaPlayer(object):
@@ -183,6 +184,7 @@ class MafiaPlayer(object):
                 # exit
                 return False, ''
         self.dead = True
+        mb.Action(self, CA.SETDEAD)
         # inform the player that they died
         mb.Send(self.name, "You have died. You may join the dead chat at "+str(mb.deadchat))
         if self.role is not None:
